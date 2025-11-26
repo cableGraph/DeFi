@@ -19,6 +19,7 @@ contract Invariants is StdInvariant, Test {
     Handler handler;
     address weth;
     address wbtc;
+
     function setUp() external {
         deployer = new DeployDSC();
         (dsc, dscE, config) = deployer.run();
