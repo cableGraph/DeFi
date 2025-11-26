@@ -1,0 +1,41 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+remappings = [
+    "@chainlink/contracts=lib/chainlink-brownie-contracts/contracts/",
+    "@openzeppelin/=lib/openzeppelin-contracts/",
+]
+
+[lint]
+# ... rest of lint config ...
+exclude_lints = [
+    "unsafe-typecast",
+    "mixed-case-variable",
+    "mixed-case-function",
+    "screaming-snake-case-immutable",
+    "screaming-snake-case-constant",
+
+]
+
+[invariant]
+runs = 128
+depth = 128
+fail_on_revert = true
+
+
+fork_url = "${SEPOLIA_RPC_URL}"
+
+# Etherscan verification
+etherscan_api_key = "${ETHERSCAN_API_KEY}"
+
+[rpc_endpoints]
+sepolia = "${SEPOLIA_RPC_URL}"
+mainnet = "https://eth-mainnet.g.alchemy.com/v2/your-api-key"
+
+[etherscan]
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
