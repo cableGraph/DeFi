@@ -183,7 +183,7 @@ forge script script/DeployDSC.s.sol:DeployDSC \
 | `getCollateralTokens()` | `address[]` | Supported assets |
 | `getUsdValue(address,uint256)` | `uint256` | Asset valuation |
 
-## 🏢 Enterprise Features
+##  Enterprise Features
 
 | Feature | Description | Status |
 |---------|-------------|--------|
@@ -192,7 +192,7 @@ forge script script/DeployDSC.s.sol:DeployDSC \
 | **Risk Monitoring** | Real-time dashboard hooks |  In Development |
 | **Compliance** | Transaction tracing |  Production |
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome technical contributions and strategic partnerships. For enterprise integration support, contact our engineering team.
 
@@ -212,7 +212,7 @@ forge test -vv
 git push origin feature/enhancement
 ```
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
@@ -221,4 +221,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Built with precision by TrustAuto Engineering**  
 *Professional DeFi infrastructure for institutional applications*
 
-*For enterprise integration: engineering@trustauto.com*
+*For enterprise integration: engineering@cableGraph.com*
