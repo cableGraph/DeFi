@@ -42,7 +42,6 @@ contract DSCEngineTest is Test {
         (dsc, dscE, config) = deployer.run();
         (wethUsdPriceFeed, wbtcUsdPriceFeed, weth, wbtc, ) = config
             .activeNetworkConfig();
-
         ERC20Mock(weth).mint(USER, STARTING_ERC20_BALANCE);
         ERC20Mock(weth).mint(EMPTY_USER, STARTING_ERC20_BALANCE);
     }
