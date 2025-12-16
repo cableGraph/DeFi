@@ -14,6 +14,28 @@
 
 The **Decentralized StableCoin (DSC)** Protocol is a sophisticated DeFi primitive delivering enterprise-ready stablecoin infrastructure. Featuring algorithmic supply control, multi-collateral backing, and real-time risk management, it sets the standard for decentralized financial infrastructure.
 
+## 🏗 Architecture
+
+```mermaid
+graph TB
+    A[User] --> B[Deposit Collateral]
+    B --> C[Health Factor Check]
+    C --> D[Mint DSC]
+    D --> E[Use in DeFi]
+    E --> F[Redeem/Burn]
+    F --> G[Withdraw Collateral]
+    
+    H[Liquidator] --> I[Monitor Positions]
+    I --> J{Liquidation Check}
+    J -->|Health < 1.0| K[Execute Liquidation]
+    J -->|Health > 1.0| I
+    
+    L[Chainlink Oracles] --> M[Price Feeds]
+    M --> N[Risk Engine]
+    N --> C
+```
+
+
 ### Live Deployment
 
 | Contract | Address | Status |
