@@ -12,7 +12,7 @@
 
 ##  Overview
 
-The **Decentralized StableCoin (DSC)** Protocol is a sophisticated DeFi primitive delivering enterprise-ready stablecoin infrastructure. Featuring algorithmic supply control, multi-collateral backing, and real-time risk management, it sets the standard for decentralized financial infrastructure.
+The **Decentralized StableCoin (DSC)** Protocol is a sophisticated DeFi primitive delivering impermeable stablecoin infrastructure. Featuring algorithmic supply control, multi-collateral backing, and real-time risk management, it sets the standard for decentralized financial infrastructure.
 
 ## 🏗 Architecture
 
