@@ -23,7 +23,7 @@ contract Invariants is StdInvariant, Test {
     function setUp() external {
         deployer = new DeployDSC();
         (dsc, dscE, config) = deployer.run();
-        (, , weth, wbtc, ) = config.activeNetworkConfig();
+        (,, weth, wbtc,) = config.activeNetworkConfig();
         handler = new Handler(dscE, dsc);
         targetContract(address(handler));
 
