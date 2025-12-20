@@ -33,7 +33,7 @@ contract DeployDSC is Script {
         expectedDecimals[0] = 18;
         expectedDecimals[1] = 8;
 
-        vm.startBroadcast(deployerKey);
+        vm.startBroadcast();
         DecentralizedStableCoin dscToken = new DecentralizedStableCoin();
         DSCEngine dscEngine = new DSCEngine(
             tokenAddresses,
