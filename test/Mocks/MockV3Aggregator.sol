@@ -7,7 +7,6 @@ pragma solidity ^0.8.0;
  * @notice Use this contract when you need to test
  * other contract's ability to read data from an
  * aggregator contract, but how the aggregator got
- * its answer is unimportant
  */
 contract MockV3Aggregator {
     uint256 public constant VERSION = 0;
