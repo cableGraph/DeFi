@@ -16,6 +16,7 @@ import {
 import {OracleLib} from "../Libraries/OracleLib.sol";
 import {ERC20YulLib} from "../Libraries/ERC20YulLib.sol";
 import {AccountDataPacker} from "../Libraries/AccountDataPackerLib.sol";
+import {EngineMath} from "../Libraries/EngineMath.sol";
 /**
  * @title DSCEngine
  * @author CableGraph
@@ -453,7 +454,11 @@ contract DSCEngine is ReentrancyGuard {
     ) internal pure returns (uint256) {
         if (totalDSCMinted == 0) return type(uint256).max;
         return
-            (collateralValueInUsd * HEALTH_FACTOR_NUMERATOR) / totalDSCMinted;
+            EngineMath.calculateHealthFactor(
+                collateralValueInUsd,
+                HEALTH_FACTOR_NUMERATOR,
+                totalDSCMinted
+            );
     }
 
     function _revertIfHealthFactorIsBroken(address user) internal view {
@@ -538,13 +543,12 @@ contract DSCEngine is ReentrancyGuard {
         uint256 adjustedPrice = _getAdjustedPrice(token);
         uint8 tokenDecimals = s_tokenConfigs[token].decimals;
 
-        uint256 normalizedAmount = (usdAmountInWei * PRECISION) / adjustedPrice;
-
         return
-            tokenDecimals == STANDARD_DECIMALS
-                ? normalizedAmount
-                : normalizedAmount /
-                    (10 ** (STANDARD_DECIMALS - tokenDecimals));
+            EngineMath.calculateTokenAmount(
+                usdAmountInWei,
+                adjustedPrice,
+                tokenDecimals
+            );
     }
 
     function getAccountCollateralValue(
@@ -585,15 +589,8 @@ contract DSCEngine is ReentrancyGuard {
 
         if (amount == 0) return 0;
 
-        if (amount > type(uint256).max / adjustedPrice) {
-            return type(uint256).max;
-        }
-
-        uint256 normalizedAmount = tokenDecimals == STANDARD_DECIMALS
-            ? amount
-            : amount * (10 ** (STANDARD_DECIMALS - tokenDecimals));
-
-        return (normalizedAmount * adjustedPrice) / PRECISION;
+        return
+            EngineMath.calculateUsdValue(amount, adjustedPrice, tokenDecimals);
     }
 
     function getAccountInformation(
