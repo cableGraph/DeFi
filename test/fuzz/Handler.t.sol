@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.18;
 
-import {Test} from "forge-std/Test.sol";
+import {Test, console} from "forge-std/Test.sol";
 import {DSCEngine} from "src/DSCEngineV1/DSCEngine.sol";
 import {
     DecentralizedStableCoin
@@ -42,11 +42,14 @@ contract Handler is Test {
         uint256 collateralSeed,
         uint256 amountCollateral
     ) public {
+        console.log("1. depositCollateral called - sender:", msg.sender);
+
         ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
         amountCollateral = bound(amountCollateral, 1, MAX_DEPOSIT_SIZE);
 
         vm.startPrank(msg.sender);
         collateral.mint(msg.sender, amountCollateral);
+
         collateral.approve(address(dscE), amountCollateral);
         dscE.depositCollateral(address(collateral), amountCollateral);
         vm.stopPrank();
@@ -79,16 +82,19 @@ contract Handler is Test {
         address sender = usersWithCollateralDeposited[
             addressSeed % usersWithCollateralDeposited.length
         ];
+
         amount = bound(amount, 1, MAX_DEPOSIT_SIZE);
         (uint256 totalDSCMinted, uint256 collateralValueInUsd) = dscE
             .getAccountInformation(sender);
 
         int256 maxDSCToMint = (int256(collateralValueInUsd) / 2) -
             int256(totalDSCMinted);
+
         if (maxDSCToMint < 0) {
             return;
         }
-        amount = bound(amount, 0, uint256(maxDSCToMint));
+        amount = bound(amount, 1, uint256(maxDSCToMint));
+
         if (amount == 0) {
             return;
         }
@@ -106,5 +112,26 @@ contract Handler is Test {
             return weth;
         }
         return wbtc;
+    }
+    // In Handler.sol - add this function
+    function debugAccountInfo(
+        address user
+    )
+        public
+        view
+        returns (
+            uint256 totalDSCMinted,
+            uint256 collateralValueInUsd,
+            uint256 wethBalance,
+            uint256 wbtcBalance,
+            uint256 healthFactor
+        )
+    {
+        (totalDSCMinted, collateralValueInUsd) = dscE.getAccountInformation(
+            user
+        );
+        wethBalance = dscE.getCollateralBalanceOfUser(user, address(weth));
+        wbtcBalance = dscE.getCollateralBalanceOfUser(user, address(wbtc));
+        healthFactor = dscE.getHealthFactor(user);
     }
 }

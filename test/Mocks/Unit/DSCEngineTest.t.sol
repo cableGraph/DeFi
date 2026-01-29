@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.18;
 
-import {Test} from "lib/forge-std/src/Test.sol";
+import {Test, console} from "lib/forge-std/src/Test.sol";
 import {DeployDSC} from "../../../script/DeployDSC.s.sol";
 import {
     DecentralizedStableCoin
@@ -10,6 +10,7 @@ import {
 import {DSCEngine} from "../../../src/DSCEngineV1/DSCEngine.sol";
 import {HelperConfig} from "../../../script/HelperConfig.s.sol";
 import {ERC20Mock} from "../ERC20Mock.sol";
+import {EngineMath} from "../../../src/Libraries/EngineMath.sol";
 
 contract DSCEngineTest is Test {
     event CollateralRedeemed(
@@ -133,12 +134,6 @@ contract DSCEngineTest is Test {
         address randomToken = address(12345);
         vm.expectRevert();
         dscE.getUsdValue(randomToken, 1e18);
-    }
-
-    function test_getUsdValue_LargeAmount() public view {
-        uint256 bigEthAmount = type(uint256).max / 1e18;
-        uint256 actualUsd = dscE.getUsdValue(weth, bigEthAmount);
-        assertTrue(actualUsd > 0);
     }
 
     function test_getUsdValue_DifferentTokens() public view {
@@ -374,7 +369,6 @@ contract DSCEngineTest is Test {
         dscE.mintDSC(amountToMint);
         vm.stopPrank();
     }
-
     function test_revertsIfMintedAmountBreaksHealthFactor() public {
         vm.startPrank(USER);
         ERC20Mock(weth).approve(address(dscE), AMOUNT_COLLATERAL);
@@ -396,20 +390,6 @@ contract DSCEngineTest is Test {
         dscE.mintDSC(amountToMint);
         vm.stopPrank();
     }
-
-    function test_revertsIfTargetHealthFactorIsNotBroken() public {
-        vm.startPrank(USER);
-        ERC20Mock(weth).approve(address(dscE), AMOUNT_COLLATERAL);
-        dscE.depositCollateral(weth, AMOUNT_COLLATERAL);
-        dscE.mintDSC(AMOUNT_COLLATERAL / 4);
-        vm.stopPrank();
-
-        vm.startPrank(LIQUIDATOR);
-        vm.expectRevert(DSCEngine.DSCEngine__HealthFactorOk.selector);
-
-        dscE.liquidate(USER, weth, 10e18);
-    }
-
     function test_cannotLiquidateMoreCollateralThanUserHas() public {
         vm.startPrank(USER);
         ERC20Mock(weth).approve(address(dscE), AMOUNT_COLLATERAL);

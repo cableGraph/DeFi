@@ -233,7 +233,6 @@ contract DSCEngine is ReentrancyGuard {
             revert DSCEngine__MintFailed();
         }
     }
-
     function depositCollateralAndMintDSC(
         address tokenCollateralAddress,
         uint256 collateralAmount,
@@ -445,7 +444,7 @@ contract DSCEngine is ReentrancyGuard {
         if (totalDSCMinted == 0) {
             return type(uint256).max;
         }
-        return _calculateHealthFactor(totalDSCMinted, collateralValueInUsd);
+        return _calculateHealthFactor(collateralValueInUsd, totalDSCMinted);
     }
 
     function _calculateHealthFactor(
@@ -493,10 +492,15 @@ contract DSCEngine is ReentrancyGuard {
         address user,
         uint256 dscMinted
     ) private view returns (uint256) {
-        if (dscMinted == 0) return type(uint256).max;
+        if (dscMinted == 0) return EngineMath.MAX_UINT256;
         uint256 collateralValue = getAccountCollateralValue(user);
         if (collateralValue == 0) return 0;
-        return (collateralValue * HEALTH_FACTOR_NUMERATOR) / dscMinted;
+        return
+            EngineMath.calculateHealthFactor(
+                collateralValue,
+                HEALTH_FACTOR_NUMERATOR,
+                dscMinted
+            );
     }
 
     //////////////////////////////////
@@ -566,12 +570,11 @@ contract DSCEngine is ReentrancyGuard {
                 uint256 adjustedPrice = _getAdjustedPrice(token);
                 uint8 tokenDecimals = s_tokenConfigs[token].decimals;
 
-                uint256 normalizedAmount = tokenDecimals == STANDARD_DECIMALS
-                    ? amount
-                    : amount * (10 ** (STANDARD_DECIMALS - tokenDecimals));
-                totalValueInUsd +=
-                    (normalizedAmount * adjustedPrice) /
-                    PRECISION;
+                totalValueInUsd += EngineMath.calculateUsdValue(
+                    amount,
+                    adjustedPrice,
+                    tokenDecimals
+                );
             }
 
             unchecked {

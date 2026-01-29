@@ -9,38 +9,45 @@ library AccountDataPacker {
         uint64 lastActivity,
         uint32 depositCount,
         uint160 flags
-    ) internal pure returns (uint256) {
+    ) internal pure returns (uint256 packed) {
         assembly {
-            // Pack: lastActivity << 192 | depositCount << 160 | flags
-            let packed := flags
+            packed := flags
             packed := or(packed, shl(DEPOSIT_COUNT_SHIFT, depositCount))
             packed := or(packed, shl(LAST_ACTIVITY_SHIFT, lastActivity))
-            mstore(0x00, packed)
-            return(0x00, 0x20)
+        }
+    }
+
+    function safeMul(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (uint256 result) {
+        assembly {
+            if gt(a, div(not(0), b)) {
+                mstore(0x40, 0xbac65e5b)
+                revert(0x1c, 0x04)
+            }
+            result := mul(a, b)
         }
     }
 
     function unpack(
         uint256 data
-    ) internal pure returns (uint64, uint32, uint160) {
+    )
+        internal
+        pure
+        returns (uint64 lastActivity, uint32 depositCount, uint160 flags)
+    {
         assembly {
-            let lastActivity := shr(LAST_ACTIVITY_SHIFT, data)
-            let depositCount := shr(DEPOSIT_COUNT_SHIFT, data)
+            lastActivity := shr(LAST_ACTIVITY_SHIFT, data)
+
+            depositCount := shr(DEPOSIT_COUNT_SHIFT, data)
             depositCount := and(depositCount, 0xFFFFFFFF)
 
             let flagsMask := sub(shl(160, 1), 1)
-            let flags := and(data, flagsMask)
-
-            mstore(0x00, lastActivity)
-            mstore(0x20, depositCount)
-            mstore(0x40, flags)
-            return(0x00, 0x60)
+            flags := and(data, flagsMask)
         }
     }
 
-    /**
-     * @dev Update only the lastActivity timestamp
-     */
     function updateLastActivity(
         uint256 currentData,
         uint64 newTimestamp
@@ -49,77 +56,54 @@ library AccountDataPacker {
         return pack(newTimestamp, depositCount, flags);
     }
 
-    /**
-     * @dev Increment the deposit count
-     */
     function incrementDepositCount(
         uint256 currentData
     ) internal pure returns (uint256) {
         (uint64 lastActivity, uint32 depositCount, uint160 flags) = unpack(
             currentData
         );
-        // Prevent overflow (max 4.29B deposits per account)
         if (depositCount == type(uint32).max) {
             revert("Deposit count overflow");
         }
         return pack(lastActivity, depositCount + 1, flags);
     }
 
-    /**
-     * @dev Get only the lastActivity from packed data
-     */
-    function getLastActivity(uint256 data) internal pure returns (uint64) {
+    function getLastActivity(
+        uint256 data
+    ) internal pure returns (uint64 lastActivity) {
         assembly {
-            let lastActivity := shr(LAST_ACTIVITY_SHIFT, data)
-            mstore(0x00, lastActivity)
-            return(0x00, 0x20)
+            lastActivity := shr(LAST_ACTIVITY_SHIFT, data)
         }
     }
 
-    /**
-     * @dev Get only the depositCount from packed data
-     */
-    function getDepositCount(uint256 data) internal pure returns (uint32) {
+    function getDepositCount(
+        uint256 data
+    ) internal pure returns (uint32 depositCount) {
         assembly {
-            let depositCount := shr(DEPOSIT_COUNT_SHIFT, data)
+            depositCount := shr(DEPOSIT_COUNT_SHIFT, data)
             depositCount := and(depositCount, 0xFFFFFFFF)
-            mstore(0x00, depositCount)
-            return(0x00, 0x20)
         }
     }
 
-    /**
-     * @dev Get only the flags from packed data
-     */
-    function getFlags(uint256 data) internal pure returns (uint160) {
+    function getFlags(uint256 data) internal pure returns (uint160 flags) {
         assembly {
-            // Calculate mask: (1 << 160) - 1
             let flagsMask := sub(shl(160, 1), 1)
-            let flags := and(data, flagsMask)
-            mstore(0x00, flags)
-            return(0x00, 0x20)
+            flags := and(data, flagsMask)
         }
     }
 
-    /**
-     * @dev Gas-optimized: Update both lastActivity and increment depositCount in one operation
-     */
     function updateActivityAndIncrementDeposit(
         uint256 currentData
     ) internal view returns (uint256) {
         (uint64 lastActivity, uint32 depositCount, uint160 flags) = unpack(
             currentData
         );
-        // Prevent overflow
         if (depositCount == type(uint32).max) {
             revert("Deposit count overflow");
         }
         return pack(uint64(block.timestamp), depositCount + 1, flags);
     }
 
-    /**
-     * @dev Gas-optimized: Update only lastActivity (for non-deposit operations)
-     */
     function updateActivity(
         uint256 currentData
     ) internal view returns (uint256) {
