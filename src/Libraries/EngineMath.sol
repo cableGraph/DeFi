@@ -44,24 +44,19 @@ library EngineMath {
         }
     }
 
-    function calculateHealthFactor(
-        uint256 collateralValueInUsd,
-        uint256 healthFactorNumerator,
-        uint256 totalDSCMinted
-    ) internal pure returns (uint256) {
+    function calculateHealthFactor(uint256 collateralValueInUsd, uint256 healthFactorNumerator, uint256 totalDSCMinted)
+        internal
+        pure
+        returns (uint256)
+    {
         if (totalDSCMinted == 0) return MAX_UINT256;
 
-        uint256 adjustedCollateral = collateralValueInUsd *
-            healthFactorNumerator;
+        uint256 adjustedCollateral = collateralValueInUsd * healthFactorNumerator;
 
         return adjustedCollateral / totalDSCMinted;
     }
 
-    function calculateUsdValue(
-        uint256 amount,
-        uint256 price,
-        uint8 tokenDecimals
-    ) internal pure returns (uint256) {
+    function calculateUsdValue(uint256 amount, uint256 price, uint8 tokenDecimals) internal pure returns (uint256) {
         if (amount == 0) return 0;
 
         if (tokenDecimals == 18) {
@@ -72,11 +67,11 @@ library EngineMath {
         return mulWad(normalizedAmount, price);
     }
 
-    function calculateTokenAmount(
-        uint256 usdAmount,
-        uint256 price,
-        uint8 tokenDecimals
-    ) internal pure returns (uint256) {
+    function calculateTokenAmount(uint256 usdAmount, uint256 price, uint8 tokenDecimals)
+        internal
+        pure
+        returns (uint256)
+    {
         if (price == 0) return MAX_UINT256;
 
         uint256 amount18 = divWad(usdAmount, price);
@@ -88,10 +83,7 @@ library EngineMath {
         return amount18 / (10 ** (18 - tokenDecimals));
     }
 
-    function safeMul(
-        uint256 a,
-        uint256 b
-    ) internal pure returns (uint256 result) {
+    function safeMul(uint256 a, uint256 b) internal pure returns (uint256 result) {
         assembly {
             if gt(a, div(not(0), b)) {
                 mstore(0x40, 0xbac65e5b)
@@ -101,10 +93,7 @@ library EngineMath {
         }
     }
 
-    function safeDiv(
-        uint256 a,
-        uint256 b
-    ) internal pure returns (uint256 result) {
+    function safeDiv(uint256 a, uint256 b) internal pure returns (uint256 result) {
         assembly {
             if iszero(b) {
                 mstore(0x40, 0x65244e4e)
@@ -130,6 +119,7 @@ library EngineMath {
         require(b <= a, "Math: subtraction underflow");
         return a - b;
     }
+
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
         if (c < a) revert MathMasters__AddFailed();

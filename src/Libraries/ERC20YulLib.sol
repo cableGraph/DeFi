@@ -6,10 +6,7 @@ library ERC20YulLib {
         assembly {
             let ptr := mload(0x40)
 
-            mstore(
-                ptr,
-                0xa9059cbb00000000000000000000000000000000000000000000000000000000
-            )
+            mstore(ptr, 0xa9059cbb00000000000000000000000000000000000000000000000000000000)
             mstore(add(ptr, 0x04), to)
             mstore(add(ptr, 0x24), amount)
 
@@ -33,20 +30,12 @@ library ERC20YulLib {
         }
     }
 
-    function safeTransferFrom(
-        address token,
-        address from,
-        address to,
-        uint256 amount
-    ) internal {
+    function safeTransferFrom(address token, address from, address to, uint256 amount) internal {
         bool success;
         assembly {
             let ptr := mload(0x40)
 
-            mstore(
-                ptr,
-                0x23b872dd00000000000000000000000000000000000000000000000000000000
-            )
+            mstore(ptr, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
             mstore(add(ptr, 0x04), from)
             mstore(add(ptr, 0x24), to)
             mstore(add(ptr, 0x44), amount)
@@ -63,17 +52,12 @@ library ERC20YulLib {
 
         require(success, "ERC20YulLib: transfer failed");
     }
-    function balanceOf(
-        address token,
-        address account
-    ) internal view returns (uint256 tokenBalance) {
+
+    function balanceOf(address token, address account) internal view returns (uint256 tokenBalance) {
         assembly {
             let ptr := mload(0x40)
 
-            mstore(
-                ptr,
-                0x70a0823100000000000000000000000000000000000000000000000000000000
-            )
+            mstore(ptr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
             mstore(add(ptr, 0x04), account)
 
             let success := staticcall(gas(), token, ptr, 0x24, 0, 0x20)

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.18;
 
-import {Test, console} from "lib/forge-std/src/Test.sol";
+import {Test} from "lib/forge-std/src/Test.sol";
 import {DeployDSC} from "../../../script/DeployDSC.s.sol";
 import {
     DecentralizedStableCoin
@@ -10,7 +10,6 @@ import {
 import {DSCEngine} from "../../../src/DSCEngineV1/DSCEngine.sol";
 import {HelperConfig} from "../../../script/HelperConfig.s.sol";
 import {ERC20Mock} from "../ERC20Mock.sol";
-import {EngineMath} from "../../../src/Libraries/EngineMath.sol";
 
 contract DSCEngineTest is Test {
     event CollateralRedeemed(
