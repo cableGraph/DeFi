@@ -1,3 +1,4 @@
+## Mermaid Overview
 ```mermaid
 graph TB
     A[User] --> B[Deposit Collateral]
