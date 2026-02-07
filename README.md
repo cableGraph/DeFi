@@ -41,13 +41,13 @@ graph TB
 
  My learning curve turned into real engineering:
  
-• From HelloWorld to health factor calculations
+    • From HelloWorld to health factor calculations
 
-• From simple tokens to multi-collateral systems
+    • From simple tokens to multi-collateral systems
+ 
+    • From basic tests to 10k+ fuzz runs and formal verification
 
-• From basic tests to 10k+ fuzz runs and formal verification
-
-• From copy-paste code to 40% gas optimizations with Yul
+    •  40% gas optimizations with Yul
 
  This project represents:
 • Countless hours debugging edge cases
