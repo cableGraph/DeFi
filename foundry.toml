@@ -19,7 +19,6 @@ exclude_lints = [
     "unwrapped-modifier-logic",
 
 ]
-
 [invariant]
 runs = 128
 depth = 128

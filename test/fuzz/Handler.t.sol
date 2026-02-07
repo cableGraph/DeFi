@@ -3,8 +3,8 @@
 pragma solidity ^0.8.18;
 
 import {Test, console} from "forge-std/Test.sol";
-import {DSCEngine} from "src/DSCEngineV1/DSCEngine.sol";
-import {DecentralizedStableCoin} from "src/DSCEngineV1/DecentralizedStableCoin.sol";
+import {DSCEngine} from "src/Core/DSCEngine.sol";
+import {DecentralizedStableCoin} from "src/Core/DecentralizedStableCoin.sol";
 import {ERC20Mock} from "../Mocks/ERC20Mock.sol";
 import {MockV3Aggregator} from "../Mocks/MockV3Aggregator.sol";
 
@@ -15,7 +15,8 @@ contract Handler is Test {
     ERC20Mock wbtc;
     MockV3Aggregator public ethUsdPriceFeed;
 
-    mapping(address => mapping(address => uint256)) public userCollateralDeposits;
+    mapping(address => mapping(address => uint256))
+        public userCollateralDeposits;
 
     uint256 public timesMintIsCalled;
     address[] public usersWithCollateralDeposited;
@@ -30,10 +31,15 @@ contract Handler is Test {
         weth = ERC20Mock(collateralTokens[0]);
         wbtc = ERC20Mock(collateralTokens[1]);
 
-        ethUsdPriceFeed = MockV3Aggregator(dscE.getCollateralTokenPriceFeed(address(weth)));
+        ethUsdPriceFeed = MockV3Aggregator(
+            dscE.getCollateralTokenPriceFeed(address(weth))
+        );
     }
 
-    function depositCollateral(uint256 collateralSeed, uint256 amountCollateral) public {
+    function depositCollateral(
+        uint256 collateralSeed,
+        uint256 amountCollateral
+    ) public {
         console.log("1. depositCollateral called - sender:", msg.sender);
 
         ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
@@ -48,10 +54,16 @@ contract Handler is Test {
         usersWithCollateralDeposited.push(msg.sender);
     }
 
-    function redeemCollateral(uint256 collateralSeed, uint256 amountCollateral) public {
+    function redeemCollateral(
+        uint256 collateralSeed,
+        uint256 amountCollateral
+    ) public {
         ERC20Mock collateral = _getCollateralFromSeed(collateralSeed);
 
-        uint256 maxCollateralToRedeem = dscE.getCollateralBalanceOfUser(address(collateral), msg.sender);
+        uint256 maxCollateralToRedeem = dscE.getCollateralBalanceOfUser(
+            address(collateral),
+            msg.sender
+        );
 
         amountCollateral = bound(amountCollateral, 0, maxCollateralToRedeem);
 
@@ -65,12 +77,16 @@ contract Handler is Test {
         if (usersWithCollateralDeposited.length == 0) {
             return;
         }
-        address sender = usersWithCollateralDeposited[addressSeed % usersWithCollateralDeposited.length];
+        address sender = usersWithCollateralDeposited[
+            addressSeed % usersWithCollateralDeposited.length
+        ];
 
         amount = bound(amount, 1, MAX_DEPOSIT_SIZE);
-        (uint256 totalDSCMinted, uint256 collateralValueInUsd) = dscE.getAccountInformation(sender);
+        (uint256 totalDSCMinted, uint256 collateralValueInUsd) = dscE
+            .getAccountInformation(sender);
 
-        int256 maxDSCToMint = (int256(collateralValueInUsd) / 2) - int256(totalDSCMinted);
+        int256 maxDSCToMint = (int256(collateralValueInUsd) / 2) -
+            int256(totalDSCMinted);
 
         if (maxDSCToMint < 0) {
             return;
@@ -87,7 +103,9 @@ contract Handler is Test {
         timesMintIsCalled++;
     }
 
-    function _getCollateralFromSeed(uint256 collateralSeed) private view returns (ERC20Mock) {
+    function _getCollateralFromSeed(
+        uint256 collateralSeed
+    ) private view returns (ERC20Mock) {
         if (collateralSeed % 2 == 0) {
             return weth;
         }
@@ -95,7 +113,9 @@ contract Handler is Test {
     }
 
     // In Handler.sol - add this function
-    function debugAccountInfo(address user)
+    function debugAccountInfo(
+        address user
+    )
         public
         view
         returns (
@@ -106,7 +126,9 @@ contract Handler is Test {
             uint256 healthFactor
         )
     {
-        (totalDSCMinted, collateralValueInUsd) = dscE.getAccountInformation(user);
+        (totalDSCMinted, collateralValueInUsd) = dscE.getAccountInformation(
+            user
+        );
         wethBalance = dscE.getCollateralBalanceOfUser(user, address(weth));
         wbtcBalance = dscE.getCollateralBalanceOfUser(user, address(wbtc));
         healthFactor = dscE.getHealthFactor(user);

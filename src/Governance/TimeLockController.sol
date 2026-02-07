@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import {TimelockController} from "@openzeppelin/governance/TimelockController.sol";
+import {
+    TimelockController
+} from "@openzeppelin/governance/TimelockController.sol";
 import {AccessControl} from "@openzeppelin/access/AccessControl.sol";
 
 /**
@@ -19,7 +21,10 @@ contract DSCTimelock is TimelockController {
     //////////////////
     //// ERRORS /////
     ////////////////
-    error DSCTimelock__OperationTooShort(uint256 currentDelay, uint256 minDelay);
+    error DSCTimelock__OperationTooShort(
+        uint256 currentDelay,
+        uint256 minDelay
+    );
     error DSCTimelock__OperationTooLong(uint256 currentDelay, uint256 maxDelay);
     error DSCTimelock__InvalidCallData(address target, bytes4 selector);
     error DSCTimelock__CriticalOperationNoGracePeriod();
@@ -51,10 +56,9 @@ contract DSCTimelock is TimelockController {
     uint256 public constant DEFAULT_MIN_DELAY = 2 days; // 2-day safety buffer
     uint256 public constant MAX_DELAY = 7 days; // Maximum delay allowed
     uint256 public constant EMERGENCY_EXECUTION_DELAY = 6 hours; // For critical issues
-
-    // Critical operations that need extra scrutiny
     bytes4 private constant CRITICAL_SELECTORS = bytes4(keccak256("pause()"));
-    bytes4 private constant EMERGENCY_SELECTORS = bytes4(keccak256("emergencyWithdraw(address)"));
+    bytes4 private constant EMERGENCY_SELECTORS =
+        bytes4(keccak256("emergencyWithdraw(address)"));
 
     //////////////////////
     //// STATE VARS /////
@@ -66,7 +70,8 @@ contract DSCTimelock is TimelockController {
 
     // Custom roles for your protocol
     bytes32 public constant GUARDIAN_ROLE = keccak256("GUARDIAN_ROLE");
-    bytes32 public constant EMERGENCY_EXECUTOR_ROLE = keccak256("EMERGENCY_EXECUTOR_ROLE");
+    bytes32 public constant EMERGENCY_EXECUTOR_ROLE =
+        keccak256("EMERGENCY_EXECUTOR_ROLE");
 
     /**
      * @param initialAdmin Initial admin address (will be multisig/governance)
@@ -79,11 +84,17 @@ contract DSCTimelock is TimelockController {
         address[] memory proposers,
         address[] memory executors,
         address[] memory guardians
-    ) TimelockController(DEFAULT_MIN_DELAY, proposers, executors, initialAdmin) {
+    )
+        TimelockController(
+            DEFAULT_MIN_DELAY,
+            proposers,
+            executors,
+            initialAdmin
+        )
+    {
         s_minDelay = DEFAULT_MIN_DELAY;
         s_maxDelay = MAX_DELAY;
 
-        // Setup guardians
         for (uint256 i = 0; i < guardians.length; i++) {
             if (guardians[i] == address(0)) {
                 revert DSCTimelock__ZeroAddressNotAllowed();
@@ -92,7 +103,6 @@ contract DSCTimelock is TimelockController {
             emit GuardianAdded(guardians[i]);
         }
 
-        // Grant custom roles
         _grantRole(GUARDIAN_ROLE, initialAdmin);
         for (uint256 i = 0; i < guardians.length; i++) {
             _grantRole(GUARDIAN_ROLE, guardians[i]);
@@ -121,7 +131,6 @@ contract DSCTimelock is TimelockController {
         bytes32 salt,
         uint256 delay
     ) public override onlyRole(PROPOSER_ROLE) {
-        // Validate delay
         uint256 operationDelay = delay > 0 ? delay : getMinDelay();
 
         if (operationDelay < s_minDelay) {
@@ -131,15 +140,20 @@ contract DSCTimelock is TimelockController {
             revert DSCTimelock__OperationTooLong(operationDelay, s_maxDelay);
         }
 
-        // Validate target and calldata for critical operations
         _validateOperation(target, data, operationDelay);
 
-        // Call parent schedule
         super.schedule(target, value, data, predecessor, salt, operationDelay);
 
-        // Emit custom event
         bytes32 id = hashOperation(target, value, data, predecessor, salt);
-        emit OperationScheduled(id, 0, target, value, data, predecessor, operationDelay);
+        emit OperationScheduled(
+            id,
+            0,
+            target,
+            value,
+            data,
+            predecessor,
+            operationDelay
+        );
     }
 
     /**
@@ -160,7 +174,6 @@ contract DSCTimelock is TimelockController {
         bytes32 salt,
         uint256 delay
     ) public override onlyRole(PROPOSER_ROLE) {
-        // Validate delay
         uint256 operationDelay = delay > 0 ? delay : getMinDelay();
 
         if (operationDelay < s_minDelay) {
@@ -170,18 +183,36 @@ contract DSCTimelock is TimelockController {
             revert DSCTimelock__OperationTooLong(operationDelay, s_maxDelay);
         }
 
-        // Validate each operation
         for (uint256 i = 0; i < targets.length; i++) {
             _validateOperation(targets[i], payloads[i], operationDelay);
         }
 
-        // Call parent scheduleBatch
-        super.scheduleBatch(targets, values, payloads, predecessor, salt, operationDelay);
+        super.scheduleBatch(
+            targets,
+            values,
+            payloads,
+            predecessor,
+            salt,
+            operationDelay
+        );
 
-        // Emit events for each operation
         for (uint256 i = 0; i < targets.length; i++) {
-            bytes32 id = hashOperation(targets[i], values[i], payloads[i], predecessor, salt);
-            emit OperationScheduled(id, i, targets[i], values[i], payloads[i], predecessor, operationDelay);
+            bytes32 id = hashOperation(
+                targets[i],
+                values[i],
+                payloads[i],
+                predecessor,
+                salt
+            );
+            emit OperationScheduled(
+                id,
+                i,
+                targets[i],
+                values[i],
+                payloads[i],
+                predecessor,
+                operationDelay
+            );
         }
     }
 
@@ -194,16 +225,15 @@ contract DSCTimelock is TimelockController {
      * @param predecessor Predecessor operation
      * @param salt Unique salt
      */
-    function execute(address target, uint256 value, bytes calldata payload, bytes32 predecessor, bytes32 salt)
-        public
-        payable
-        override
-        onlyRoleOrOpenRole(EXECUTOR_ROLE)
-    {
-        // Call parent execute
+    function execute(
+        address target,
+        uint256 value,
+        bytes calldata payload,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public payable override onlyRoleOrOpenRole(EXECUTOR_ROLE) {
         super.execute(target, value, payload, predecessor, salt);
 
-        // Emit custom event
         bytes32 id = hashOperation(target, value, payload, predecessor, salt);
         emit OperationExecuted(id, 0);
     }
@@ -223,12 +253,16 @@ contract DSCTimelock is TimelockController {
         bytes32 predecessor,
         bytes32 salt
     ) public payable override onlyRoleOrOpenRole(EXECUTOR_ROLE) {
-        // Call parent executeBatch
         super.executeBatch(targets, values, payloads, predecessor, salt);
 
-        // Emit events for each operation
         for (uint256 i = 0; i < targets.length; i++) {
-            bytes32 id = hashOperation(targets[i], values[i], payloads[i], predecessor, salt);
+            bytes32 id = hashOperation(
+                targets[i],
+                values[i],
+                payloads[i],
+                predecessor,
+                salt
+            );
             emit OperationExecuted(id, i);
         }
     }
@@ -242,28 +276,21 @@ contract DSCTimelock is TimelockController {
      * @param predecessor Predecessor operation
      * @param salt Unique salt
      */
-    function emergencyExecute(address target, uint256 value, bytes calldata payload, bytes32 predecessor, bytes32 salt)
-        external
-        onlyRole(GUARDIAN_ROLE)
-    {
-        // Validate it's an emergency operation
+    function emergencyExecute(
+        address target,
+        uint256 value,
+        bytes calldata payload,
+        bytes32 predecessor,
+        bytes32 salt
+    ) external onlyRole(GUARDIAN_ROLE) {
         bytes4 selector = _getSelector(payload);
         if (selector != EMERGENCY_SELECTORS) {
             revert DSCTimelock__EmergencyOperationOnly();
         }
 
-        // Mark as emergency operation
         bytes32 id = hashOperation(target, value, payload, predecessor, salt);
         s_emergencyOperations[id] = true;
-
-        // Execute with emergency delay
-        uint256 oldMinDelay = getMinDelay();
-        _updateDelay(EMERGENCY_EXECUTION_DELAY);
-
-        super.execute(target, value, payload, predecessor, salt);
-
-        // Restore original delay
-        _updateDelay(oldMinDelay);
+        _emergencyCall(target, value, payload);
 
         emit EmergencyExecuted(id, msg.sender);
     }
@@ -273,7 +300,9 @@ contract DSCTimelock is TimelockController {
      * @dev Only governance can update delay (through timelock itself)
      * @param newDelay New minimum delay
      */
-    function updateMinDelay(uint256 newDelay) external onlyRole(TIMELOCK_ADMIN_ROLE) {
+    function updateMinDelay(
+        uint256 newDelay
+    ) external onlyRole(TIMELOCK_ADMIN_ROLE) {
         if (newDelay > s_maxDelay) {
             revert DSCTimelock__OperationTooLong(newDelay, s_maxDelay);
         }
@@ -284,9 +313,6 @@ contract DSCTimelock is TimelockController {
         uint256 oldDelay = s_minDelay;
         s_minDelay = newDelay;
 
-        // Update the timelock's internal delay
-        _updateDelay(newDelay);
-
         emit MinDelayChanged(oldDelay, newDelay);
     }
 
@@ -295,7 +321,9 @@ contract DSCTimelock is TimelockController {
      * @dev Only admin can add guardians
      * @param guardian Address to add as guardian
      */
-    function addGuardian(address guardian) external onlyRole(TIMELOCK_ADMIN_ROLE) {
+    function addGuardian(
+        address guardian
+    ) external onlyRole(TIMELOCK_ADMIN_ROLE) {
         if (guardian == address(0)) {
             revert DSCTimelock__ZeroAddressNotAllowed();
         }
@@ -314,7 +342,9 @@ contract DSCTimelock is TimelockController {
      * @dev Only admin can remove guardians
      * @param guardian Address to remove from guardians
      */
-    function removeGuardian(address guardian) external onlyRole(TIMELOCK_ADMIN_ROLE) {
+    function removeGuardian(
+        address guardian
+    ) external onlyRole(TIMELOCK_ADMIN_ROLE) {
         if (!s_guardians[guardian]) {
             revert("Not a guardian");
         }
@@ -335,22 +365,22 @@ contract DSCTimelock is TimelockController {
      * @param data Calldata for the operation
      * @param delay Proposed delay
      */
-    function _validateOperation(address target, bytes calldata data, uint256 delay) internal view {
-        // Extract function selector
-        if (data.length < 4) return; // Not a function call
+    function _validateOperation(
+        address target,
+        bytes calldata data,
+        uint256 delay
+    ) internal view {
+        if (data.length < 4) return;
 
         bytes4 selector = _getSelector(data);
 
-        // Critical operations (pause) need longer delay
         if (selector == CRITICAL_SELECTORS) {
             if (delay < 3 days) {
                 revert DSCTimelock__CriticalOperationNoGracePeriod();
             }
         }
 
-        // Prevent certain operations through timelock
         if (target == address(this)) {
-            // Prevent changing timelock delay to very short period
             if (selector == bytes4(keccak256("updateDelay(uint256)"))) {
                 if (delay < 3 days) {
                     revert DSCTimelock__CriticalOperationNoGracePeriod();
@@ -364,9 +394,30 @@ contract DSCTimelock is TimelockController {
      * @param data Calldata
      * @return selector Function selector
      */
-    function _getSelector(bytes calldata data) internal pure returns (bytes4 selector) {
+    function _getSelector(
+        bytes calldata data
+    ) internal pure returns (bytes4 selector) {
         assembly {
             selector := calldataload(data.offset)
+        }
+    }
+    function _emergencyCall(
+        address target,
+        uint256 value,
+        bytes calldata data
+    ) internal {
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
+
+        if (!success) {
+            if (returndata.length > 0) {
+                assembly {
+                    revert(add(returndata, 32), mload(returndata))
+                }
+            } else {
+                revert("DSCTimelock: emergency call failed");
+            }
         }
     }
 
@@ -414,7 +465,9 @@ contract DSCTimelock is TimelockController {
      * @return timestamp When the operation becomes ready
      * @return executed If the operation was executed
      */
-    function getOperation(bytes32 id) external view returns (uint256 timestamp, bool executed) {
+    function getOperation(
+        bytes32 id
+    ) external view returns (uint256 timestamp, bool executed) {
         return (getTimestamp(id), isOperationDone(id));
     }
 
@@ -423,8 +476,6 @@ contract DSCTimelock is TimelockController {
      * @return Array of operation IDs that are pending
      */
     function getPendingOperations() external view returns (bytes32[] memory) {
-        // This would need to track all operations
-        // Simplified version - in production you'd track this
         return new bytes32[](0);
     }
 
@@ -437,11 +488,13 @@ contract DSCTimelock is TimelockController {
      * @param salt Unique salt
      * @return Operation hash
      */
-    function computeOperationId(address target, uint256 value, bytes calldata data, bytes32 predecessor, bytes32 salt)
-        external
-        pure
-        returns (bytes32)
-    {
+    function computeOperationId(
+        address target,
+        uint256 value,
+        bytes calldata data,
+        bytes32 predecessor,
+        bytes32 salt
+    ) external pure returns (bytes32) {
         return hashOperation(target, value, data, predecessor, salt);
     }
 }
