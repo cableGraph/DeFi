@@ -86,6 +86,7 @@ contract DSCEngine is ReentrancyGuard {
     uint8 private constant STANDARD_DECIMALS = 18;
     uint256 private constant HEALTH_FACTOR_NUMERATOR =
         (LIQUIDATION_THRESHOLD * PRECISION) / LIQUIDATION_PRECISION;
+    address public governance; 
 
     struct UserAccount {
         uint256 DSCMinted;
