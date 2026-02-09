@@ -1,3 +1,11 @@
+# Just show the demo already!
+
+**[📺 WATCH DEMO VIDEO](https://github.com/cableGraph/DeFi/releases/download/engine-demo-v1/Duloom.mp4)**
+
+*Click above to see the complete DeFi protocol in action - no signup required.*
+
+---
+
 ## Mermaid Overview
 ```mermaid
 graph TB
