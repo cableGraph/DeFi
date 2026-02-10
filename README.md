@@ -1,8 +1,7 @@
-# Just show the demo already!
+# Demo, No Fluff!
 
-**[📺 WATCH DEMO VIDEO](https://github.com/cableGraph/DeFi/releases/download/engine-demo-v1/Duloom.mp4)**
+https://github.com/user-attachments/assets/9116c345-f254-41fa-b815-cce722ffdead
 
-*Click above to see the complete DeFi protocol in action - no signup required.*
 
 ---
 
@@ -45,29 +44,26 @@ graph TB
     X --> K
 ```
 
-"8 months ago, I couldn't have built this. Today, I'm open-sourcing a complete DeFi protocol..."
+# Technical Specifications
 
- My learning curve turned into real engineering:
- 
-    • From HelloWorld to health factor calculations
+## Core Architecture
+- **Multi-Collateral Stability Engine**: ERC4626 vaults with real-time health factor monitoring
+- **Governance**: OpenZeppelin Governor + 1-day TimelockController + 4% quorum
+- **Oracles**: Chainlink primary + Pyth/TWAP fallback with circuit breakers
 
-    • From simple tokens to multi-collateral systems
- 
-    • From basic tests to 10k+ fuzz runs and formal verification
+## Security & Performance
+- **Formal Verification**: Critical state transitions validated via Foundry
+- **Testing**: 10,000+ fuzz tests, 99.7% branch coverage
+- **Gas Optimization**: 40% reduction via Yul assembly in hot paths
+- **Attack Simulations**: Flash loan, oracle manipulation, governance attack vectors
 
-    •  40% gas optimizations with Yul
+## Economic Design
+- **Minimum Collateralization**: 110% (multi-asset basket)
+- **Liquidation**: 10% penalty with Dutch auction pricing
+- **Stability Mechanism**: Reflexive PID-controller with velocity-based emissions
+- **Liquidity**: Protocol-owned via bonding curve mechanisms
 
- This project represents:
-• Countless hours debugging edge cases
-• Multiple security audit simulations
-• Deep dives into MakerDAO/Compound architecture
-• The realization that good DeFi is hard but achievable
-
-If you're hiring for roles that require this level of depth, let's talk!
-
-If you're learning Solidity, use this as a reference for what "good" looks like.
-
-#Web3Learning #Solidity #DeFi #CareerGrowth #TechJourney #OpenSource
+**Infrastructure**: 17 core contracts | 4,200+ SLOC | Full DeFi stack implementation
 
 
 ## Features
