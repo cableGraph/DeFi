@@ -1,7 +1,6 @@
 # Demo, No Fluff!
 
-https://github.com/user-attachments/assets/9116c345-f254-41fa-b815-cce722ffdead
-
+https://github.com/user-attachments/assets/99a5b4ef-53b0-4499-ba9d-a99c93ba14ff
 
 ---
 
