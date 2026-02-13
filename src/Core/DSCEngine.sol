@@ -16,7 +16,7 @@ import {EngineMath} from "../Libraries/EngineMath.sol";
 
 /**
  * @title DSCEngine
- * @author CableGraph
+ * @author Dennis Kiptoo
  * The system design is minimalistic as possible and have the tokens maintain the 1 token = $1 peg.
  * The token has the properties:
  * - Exogenous Collateral
