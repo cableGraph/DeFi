@@ -77,7 +77,7 @@ graph TB
 | **Reentrancy Protection** | OpenZeppelin NonReentrant guards | Classic vulnerability prevention |
 | **Oracle Security** | Chainlink with staleness checks | Manipulation-resistant price feeds |
 
-### ⚡ **Performance Optimizations**
+###  **Performance Optimizations**
 | Optimization | Technique | Impact |
 |-------------|-----------|--------|
 | **Gas-Efficient Storage** | Packed structs & Yul assembly | ~40% gas reduction |
