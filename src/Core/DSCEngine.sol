@@ -3,21 +3,20 @@
 pragma solidity ^0.8.18;
 
 import {DecentralizedStableCoin} from "./DecentralizedStableCoin.sol";
-import {
-    ReentrancyGuard
-} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {
-    SafeERC20
-} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/security/ReentrancyGuard.sol";
+import {IERC20} from "@openzeppelin/token/ERC20/ERC20.sol";
+import {SafeERC20} from "@openzeppelin/token/ERC20/utils/SafeERC20.sol";
 import {
     AggregatorV3Interface
 } from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import {OracleLib} from "./Libraries/OracleLib.sol";
+import {OracleLib} from "../Libraries/OracleLib.sol";
+import {ERC20YulLib} from "../Libraries/ERC20YulLib.sol";
+import {AccountDataPacker} from "../Libraries/AccountDataPackerLib.sol";
+import {EngineMath} from "../Libraries/EngineMath.sol";
 
 /**
  * @title DSCEngine
- * @author CableGraph
+ * @author Dennis Kiptoo
  * The system design is minimalistic as possible and have the tokens maintain the 1 token = $1 peg.
  * The token has the properties:
  * - Exogenous Collateral
@@ -46,11 +45,14 @@ contract DSCEngine is ReentrancyGuard {
     error DSCEngine__HealthFactorNotImproved();
     error DSCEngine__InvalidAmount();
     DecentralizedStableCoin private immutable i_dsc;
+    ProtocolState private s_protocolState;
+
     /////////////////
     //// Type ////
     ///////////////
     using OracleLib for AggregatorV3Interface;
     using SafeERC20 for IERC20;
+    using ERC20YulLib for address;
     /////////////////
     //// EVENTS ////
     ///////////////
@@ -84,22 +86,29 @@ contract DSCEngine is ReentrancyGuard {
     uint8 private constant STANDARD_DECIMALS = 18;
     uint256 private constant HEALTH_FACTOR_NUMERATOR =
         (LIQUIDATION_THRESHOLD * PRECISION) / LIQUIDATION_PRECISION;
-
-    uint256 public totalDeptCeiling = 10_000_000 * 1e18;
-    address public owner = msg.sender;
-    bool public paused;
+    address public governance; 
 
     struct UserAccount {
         uint256 DSCMinted;
+        uint256 accountData; 
         mapping(address => uint256) collateral;
-        address[] tokensUsed;
     }
 
-    mapping(address => UserAccount) private s_accounts;
-    mapping(address token => uint8 decimals) private s_tokenDecimals;
-    mapping(address token => address priceFeed) private s_priceFeeds;
-    address[] private s_collateralTokens;
+    struct ProtocolState {
+        address owner;
+        bool paused;
+        uint40 lastPauseTime;
+        uint24 pauseCount;
+    }
 
+    struct TokenConfig {
+        address priceFeed;
+        uint8 decimals;
+        bool isActive;
+    }
+    mapping(address token => TokenConfig) private s_tokenConfigs;
+    mapping(address => UserAccount) private s_accounts;
+    address[] private s_collateralTokens;
     modifier isAllowedToken(address token) {
         __isAllowedToken(token);
         _;
@@ -109,20 +118,21 @@ contract DSCEngine is ReentrancyGuard {
         _;
     }
     modifier notPaused() {
-        require(!paused, "paused");
+        require(!s_protocolState.paused, "paused");
         _;
     }
 
     constructor(
         address[] memory tokenAddresses,
         address[] memory priceFeedAddresses,
-        address dscEngine,
+        address dscToken,
         uint8[] memory expectedDecimals
     ) {
-        require(dscEngine != address(0), "Invalid DSC address");
+        require(dscToken != address(0), "Invalid DSC address");
 
-        owner = msg.sender;
-
+        s_protocolState.owner = msg.sender;
+        s_protocolState.paused = false;
+        s_protocolState.pauseCount = 0;
         uint256 tokenAddrLength = tokenAddresses.length;
         uint256 priceFeedAddrLength = priceFeedAddresses.length;
 
@@ -136,15 +146,18 @@ contract DSCEngine is ReentrancyGuard {
         address[] memory _priceFeeds = priceFeedAddresses;
 
         for (uint256 i; i < tokenAddrLength; ) {
-            s_priceFeeds[_tokenAddresses[i]] = _priceFeeds[i];
+            s_tokenConfigs[_tokenAddresses[i]] = TokenConfig({
+                priceFeed: _priceFeeds[i],
+                decimals: expectedDecimals[i],
+                isActive: true
+            });
             s_collateralTokens.push(_tokenAddresses[i]);
-            s_tokenDecimals[_tokenAddresses[i]] = expectedDecimals[i];
 
             unchecked {
                 i++;
             }
         }
-        i_dsc = DecentralizedStableCoin(dscEngine);
+        i_dsc = DecentralizedStableCoin(dscToken);
     }
 
     //////////////////////////////
@@ -168,21 +181,21 @@ contract DSCEngine is ReentrancyGuard {
         require(tokenCollateralAddress != address(0), "Invalid token");
 
         UserAccount storage account = s_accounts[msg.sender];
-        uint256 currentCollateral = account.collateral[tokenCollateralAddress];
-        if (currentCollateral == 0) {
-            account.tokensUsed.push(tokenCollateralAddress);
-        }
-
-        account.collateral[tokenCollateralAddress] =
-            currentCollateral +
-            collateralAmount;
+        account.collateral[tokenCollateralAddress] += collateralAmount;
+        account.accountData = AccountDataPacker.incrementDepositCount(
+            account.accountData
+        );
+        account.accountData = AccountDataPacker.updateLastActivity(
+            account.accountData,
+            uint64(block.timestamp)
+        );
         emit CollateralDeposited(
             msg.sender,
             tokenCollateralAddress,
             collateralAmount
         );
 
-        IERC20(tokenCollateralAddress).safeTransferFrom(
+        tokenCollateralAddress.safeTransferFrom(
             msg.sender,
             address(this),
             collateralAmount
@@ -210,10 +223,6 @@ contract DSCEngine is ReentrancyGuard {
 
         account.DSCMinted = newDSCMinted;
         emit DSCMinted(msg.sender, amountDSCToMint);
-        require(
-            i_dsc.totalSupply() + amountDSCToMint <= totalDeptCeiling,
-            "Debt ceiling exceeded"
-        );
 
         /**
          * @dev Using boolean check for defensive programming - handles both
@@ -309,7 +318,7 @@ contract DSCEngine is ReentrancyGuard {
             revert DSCEngine__HealthFactorOk();
         }
         uint256 tokenPrice = _getAdjustedPrice(collateral);
-        uint8 tokenDecimals = s_tokenDecimals[collateral];
+        uint8 tokenDecimals = s_tokenConfigs[collateral].decimals;
 
         uint256 normalizedTokenAmount = (debtToCover * PRECISION) / tokenPrice;
         uint256 tokenAmountFromDebtCovered = tokenDecimals == STANDARD_DECIMALS
@@ -336,12 +345,9 @@ contract DSCEngine is ReentrancyGuard {
             collateral
         );
 
-        IERC20(collateral).safeTransfer(msg.sender, totalCollateralToRedeem);
-        IERC20(address(i_dsc)).safeTransferFrom(
-            msg.sender,
-            address(this),
-            debtToCover
-        );
+        collateral.safeTransfer(msg.sender, totalCollateralToRedeem);
+        address(i_dsc).safeTransferFrom(msg.sender, address(this), debtToCover);
+
         i_dsc.burn(debtToCover);
 
         uint256 endingUserHealthFactor = _healthFactor(user);
@@ -352,26 +358,39 @@ contract DSCEngine is ReentrancyGuard {
     }
 
     function emergencyWithdraw(address token) external {
-        require(msg.sender == owner, "Not owner");
-        require(paused, "Not paused");
-        uint256 balance = IERC20(token).balanceOf(address(this));
-        IERC20(token).safeTransfer(owner, balance);
-    }
-
-    function setDeptCeiling(uint256 newCeiling) external {
-        require(msg.sender == owner, "Not owner");
-        totalDeptCeiling = newCeiling;
+        require(msg.sender == s_protocolState.owner, "Not owner");
+        require(s_protocolState.paused, "Not paused");
+        uint256 balance = token.balanceOf(address(this));
+        token.safeTransfer(s_protocolState.owner, balance);
     }
 
     function pause() external {
-        require(msg.sender == owner, "Not owner");
-        paused = true;
+        require(msg.sender == s_protocolState.owner, "Not owner");
+        s_protocolState.paused = true;
+        s_protocolState.lastPauseTime = uint40(block.timestamp);
+        s_protocolState.pauseCount++;
     }
 
     function unpause() external {
-        require(msg.sender == owner, "Not owner");
-        paused = false;
+        require(msg.sender == s_protocolState.owner, "Not owner");
+        s_protocolState.paused = false;
     }
+
+    // /**
+    //  * @notice Set the governance token address
+    //  * @dev Can only be called once by owner
+    //  * @param governanceToken Address of the governance token contract
+    //  */
+    // function setGovernanceToken(address governanceToken) external {
+    //     require(msg.sender == s_protocolState.owner, "Only owner");
+    //     require(s_governanceToken == address(0), "Already set");
+    //     if (governanceToken == address(0)) {
+    //         revert DSCEngine__InvalidGovernanceToken();
+    //     }
+
+    //     s_governanceToken = governanceToken;
+    //     emit GovernanceTokenSet(governanceToken);
+    // }
 
     ////////////////////////////////////////
     //// PRIVATE AND INTERNAL FUNCTIONS ////
@@ -395,11 +414,7 @@ contract DSCEngine is ReentrancyGuard {
         account.DSCMinted -= amountToBurn;
         emit DSCBurned(onBehalfOf, dscFrom, amountToBurn);
 
-        IERC20(address(i_dsc)).safeTransferFrom(
-            dscFrom,
-            address(this),
-            amountToBurn
-        );
+        address(i_dsc).safeTransferFrom(dscFrom, address(this), amountToBurn);
         i_dsc.burn(amountToBurn);
     }
 
@@ -417,7 +432,7 @@ contract DSCEngine is ReentrancyGuard {
             amountCollateral,
             tokenCollateralAddress
         );
-        IERC20(tokenCollateralAddress).safeTransfer(to, amountCollateral);
+        tokenCollateralAddress.safeTransfer(to, amountCollateral);
     }
 
     function _getAccountInformation(
@@ -446,7 +461,7 @@ contract DSCEngine is ReentrancyGuard {
         if (totalDSCMinted == 0) {
             return type(uint256).max;
         }
-        return _calculateHealthFactor(totalDSCMinted, collateralValueInUsd);
+        return _calculateHealthFactor(collateralValueInUsd, totalDSCMinted);
     }
 
     function _calculateHealthFactor(
@@ -455,7 +470,11 @@ contract DSCEngine is ReentrancyGuard {
     ) internal pure returns (uint256) {
         if (totalDSCMinted == 0) return type(uint256).max;
         return
-            (collateralValueInUsd * HEALTH_FACTOR_NUMERATOR) / totalDSCMinted;
+            EngineMath.calculateHealthFactor(
+                collateralValueInUsd,
+                HEALTH_FACTOR_NUMERATOR,
+                totalDSCMinted
+            );
     }
 
     function _revertIfHealthFactorIsBroken(address user) internal view {
@@ -466,7 +485,7 @@ contract DSCEngine is ReentrancyGuard {
     }
 
     function __isAllowedToken(address token) internal view {
-        if (s_priceFeeds[token] == address(0)) {
+        if (s_tokenConfigs[token].priceFeed == address(0)) {
             revert DSCEngine__TokenNotAllowed();
         }
     }
@@ -479,7 +498,7 @@ contract DSCEngine is ReentrancyGuard {
 
     function _getAdjustedPrice(address token) internal view returns (uint256) {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(
-            s_priceFeeds[token]
+            s_tokenConfigs[token].priceFeed
         );
         (, int256 price, , , ) = priceFeed.StaleCheckLatestRoundData();
         uint8 feedDecimals = priceFeed.decimals();
@@ -490,10 +509,15 @@ contract DSCEngine is ReentrancyGuard {
         address user,
         uint256 dscMinted
     ) private view returns (uint256) {
-        if (dscMinted == 0) return type(uint256).max;
+        if (dscMinted == 0) return EngineMath.MAX_UINT256;
         uint256 collateralValue = getAccountCollateralValue(user);
         if (collateralValue == 0) return 0;
-        return (collateralValue * HEALTH_FACTOR_NUMERATOR) / dscMinted;
+        return
+            EngineMath.calculateHealthFactor(
+                collateralValue,
+                HEALTH_FACTOR_NUMERATOR,
+                dscMinted
+            );
     }
 
     //////////////////////////////////
@@ -538,24 +562,22 @@ contract DSCEngine is ReentrancyGuard {
         uint256 usdAmountInWei
     ) public view returns (uint256) {
         uint256 adjustedPrice = _getAdjustedPrice(token);
-        uint8 tokenDecimals = s_tokenDecimals[token];
-
-        uint256 normalizedAmount = (usdAmountInWei * PRECISION) / adjustedPrice;
+        uint8 tokenDecimals = s_tokenConfigs[token].decimals;
 
         return
-            tokenDecimals == STANDARD_DECIMALS
-                ? normalizedAmount
-                : normalizedAmount /
-                    (10 ** (STANDARD_DECIMALS - tokenDecimals));
+            EngineMath.calculateTokenAmount(
+                usdAmountInWei,
+                adjustedPrice,
+                tokenDecimals
+            );
     }
 
     function getAccountCollateralValue(
         address user
     ) public view returns (uint256 totalValueInUsd) {
         UserAccount storage account = s_accounts[user];
-        address[] memory tokens = account.tokensUsed.length > 0
-            ? account.tokensUsed
-            : s_collateralTokens;
+
+        address[] memory tokens = s_collateralTokens;
         uint256 len = tokens.length;
 
         for (uint256 i; i < len; ) {
@@ -563,14 +585,13 @@ contract DSCEngine is ReentrancyGuard {
             uint256 amount = account.collateral[token];
             if (amount != 0) {
                 uint256 adjustedPrice = _getAdjustedPrice(token);
-                uint8 tokenDecimals = s_tokenDecimals[token];
+                uint8 tokenDecimals = s_tokenConfigs[token].decimals;
 
-                uint256 normalizedAmount = tokenDecimals == STANDARD_DECIMALS
-                    ? amount
-                    : amount * (10 ** (STANDARD_DECIMALS - tokenDecimals));
-                totalValueInUsd +=
-                    (normalizedAmount * adjustedPrice) /
-                    PRECISION;
+                totalValueInUsd += EngineMath.calculateUsdValue(
+                    amount,
+                    adjustedPrice,
+                    tokenDecimals
+                );
             }
 
             unchecked {
@@ -583,14 +604,13 @@ contract DSCEngine is ReentrancyGuard {
         address token,
         uint256 amount
     ) public view returns (uint256) {
-        uint8 tokenDecimals = s_tokenDecimals[token];
+        uint8 tokenDecimals = s_tokenConfigs[token].decimals;
         uint256 adjustedPrice = _getAdjustedPrice(token);
 
-        uint256 normalizedAmount = tokenDecimals == STANDARD_DECIMALS
-            ? amount
-            : amount * (10 ** (STANDARD_DECIMALS - tokenDecimals));
+        if (amount == 0) return 0;
 
-        return (normalizedAmount * adjustedPrice) / PRECISION;
+        return
+            EngineMath.calculateUsdValue(amount, adjustedPrice, tokenDecimals);
     }
 
     function getAccountInformation(
@@ -640,6 +660,22 @@ contract DSCEngine is ReentrancyGuard {
     function getCollateralTokenPriceFeed(
         address token
     ) external view returns (address) {
-        return s_priceFeeds[token];
+        return s_tokenConfigs[token].priceFeed;
     }
+
+    // function owner() external view returns (address) {
+    //     return s_protocolState.owner;
+    // }
+
+    // function paused() external view returns (bool) {
+    //     return s_protocolState.paused;
+    // }
+
+    // function getLastPauseTime() external view returns (uint40) {
+    //     return s_protocolState.lastPauseTime;
+    // }
+
+    // function getPauseCount() external view returns (uint24) {
+    //     return s_protocolState.pauseCount;
+    // }
 }

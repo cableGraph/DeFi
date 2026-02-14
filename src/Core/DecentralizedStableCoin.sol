@@ -2,20 +2,6 @@
 
 // This is considered an Exogenous, Decentralized, Anchored (pegged), Crypto Collateralized low volitility coin
 
-// Events
-// Modifiers
-// Functions
-
-// Layout of Functions:
-// constructor
-// receive function (if exists)
-// fallback function (if exists)
-// external
-// public
-// internal
-// private
-// view & pure functions
-
 pragma solidity ^0.8.18;
 // Layout of Contract:
 // version
@@ -25,8 +11,8 @@ pragma solidity ^0.8.18;
 // Type declarations
 // State variables
 
-import {ERC20Burnable, ERC20} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ERC20Burnable, ERC20} from "@openzeppelin/token/ERC20/extensions/ERC20Burnable.sol";
+import {Ownable} from "@openzeppelin/access/Ownable.sol";
 /*
  * @title Decentralized Stable Coin
  * @author Kiptoo Dennis
@@ -34,12 +20,8 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  * @minting: Algorithmic
  * @relativeStability: pegged to USD
  * @notice
- *
- *
  * this contract is meant to be governed by DSCEngine which is the core of the system
  * this contract is just an implementation of the ERC20 standard of our stablecoin system
- *
- *
  */
 
 contract DecentralizedStableCoin is ERC20Burnable, Ownable {
@@ -47,7 +29,9 @@ contract DecentralizedStableCoin is ERC20Burnable, Ownable {
     error DecentralizedStableCoin_BurnAmountExceedsBalance();
     error DecentralizedStableCoin_NotZeroAddress();
 
-    constructor() ERC20("Decentralized Stable Coin", "DSC") Ownable(msg.sender) {}
+    constructor() ERC20("Decentralized Stable Coin", "DSC") {
+        Ownable(msg.sender);
+    }
 
     function burn(uint256 _amount) public override onlyOwner {
         uint256 balance = balanceOf(msg.sender);
