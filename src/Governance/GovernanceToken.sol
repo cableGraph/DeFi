@@ -90,16 +90,16 @@ contract DSCGovernanceToken is
     //////////////////////
     //// CONSTANTS //////
     ////////////////////
-    uint256 public constant MAX_SUPPLY = 1_000_000_000 ether; // 1 billion tokens
-    uint256 public constant INITIAL_SUPPLY = 100_000_000 ether; // 100 million initial
-    uint256 public constant COMMUNITY_TREASURY_SUPPLY = 300_000_000 ether; // 30% for community
-    uint256 public constant TEAM_SUPPLY = 150_000_000 ether; // 15% for team (4-year vesting)
-    uint256 public constant INVESTOR_SUPPLY = 100_000_000 ether; // 10% for investors
-    uint256 public constant ECOSYSTEM_SUPPLY = 350_000_000 ether; // 35% for ecosystem growth
+    uint256 public constant MAX_SUPPLY = 1_000_000_000 ether; 
+    uint256 public constant INITIAL_SUPPLY = 100_000_000 ether; 
+    uint256 public constant COMMUNITY_TREASURY_SUPPLY = 300_000_000 ether; 
+    uint256 public constant TEAM_SUPPLY = 150_000_000 ether; 
+    uint256 public constant INVESTOR_SUPPLY = 100_000_000 ether; 
+    uint256 public constant ECOSYSTEM_SUPPLY = 350_000_000 ether; 
 
-    uint256 public constant MIN_LOCK_TIME = 7 days; // Minimum lock time for delegated tokens
-    uint256 public constant VESTING_PERIOD = 4 * 365 days; // 4-year vesting for team/investors
-    uint256 public constant DELEGATION_COOLDOWN = 7 days; // Cooldown between delegation changes
+    uint256 public constant MIN_LOCK_TIME = 7 days; 
+    uint256 public constant VESTING_PERIOD = 4 * 365 days; 
+    uint256 public constant DELEGATION_COOLDOWN = 7 days; 
 
     //////////////////////
     //// STATE VARS /////
