@@ -90,7 +90,7 @@ contract DSCEngine is ReentrancyGuard {
 
     struct UserAccount {
         uint256 DSCMinted;
-        uint256 accountData; // ← REPLACE: Packed metadata (lastActivity, depositCount, flags)
+        uint256 accountData; 
         mapping(address => uint256) collateral;
     }
 
