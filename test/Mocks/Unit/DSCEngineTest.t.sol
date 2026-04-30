@@ -55,7 +55,6 @@ contract DSCEngineTest is Test {
         expectedDecimals[0] = 18;
         expectedDecimals[1] = 8;
 
-        // Deploy contracts directly
         dsc = new DecentralizedStableCoin();
         dscE = new DSCEngine(
             tokenAddresses,
@@ -73,9 +72,6 @@ contract DSCEngineTest is Test {
         // Mint tokens
         ERC20Mock(weth).mint(USER, STARTING_ERC20_BALANCE);
         ERC20Mock(weth).mint(EMPTY_USER, STARTING_ERC20_BALANCE);
-
-        // Store weth and wbtc addresses if needed
-        // This way you don't need to store the entire config
     }
     ///////////////////////////////
     /////Constructor Tests////////
@@ -407,5 +403,63 @@ contract DSCEngineTest is Test {
 
         vm.expectRevert();
         dscE.liquidate(USER, weth, bigDebt);
+    }
+    function test_HealthyUserGetsLiquidated() public {
+        /////////////////////////////////
+        // ARRANGE - USER DEPOSITS COLLATERAL
+        /////////////////////////////////
+        vm.startPrank(USER);
+
+        ERC20Mock(weth).approve(address(dscE), AMOUNT_COLLATERAL);
+        dscE.depositCollateral(weth, AMOUNT_COLLATERAL);
+
+        /////////////////////////////////
+        // MINT A SAFE AMOUNT OF DSC (USER IS HEALTHY)
+        /////////////////////////////////
+        uint256 collateralValue = dscE.getUsdValue(weth, AMOUNT_COLLATERAL);
+
+        // mint only 10% of collateral value → SAFE position
+        uint256 safeMintAmount = (collateralValue * 10) / 100;
+
+        dscE.mintDSC(safeMintAmount);
+
+        vm.stopPrank();
+
+        /////////////////////////////////
+        // ASSERT USER IS HEALTHY BEFORE LIQUIDATION
+        /////////////////////////////////
+        uint256 healthFactorBefore = dscE.getHealthFactor(USER);
+        assertGt(
+            healthFactorBefore,
+            dscE.getMinimumHealthFactor(),
+            "User must be healthy before liquidation"
+        );
+
+        /////////////////////////////////
+        // ARRANGE LIQUIDATOR
+        /////////////////////////////////
+        vm.startPrank(LIQUIDATOR);
+
+        ERC20Mock(weth).mint(LIQUIDATOR, AMOUNT_COLLATERAL);
+        ERC20Mock(weth).approve(address(dscE), AMOUNT_COLLATERAL);
+
+        dsc.mint(LIQUIDATOR, safeMintAmount);
+        dsc.approve(address(dscE), type(uint256).max);
+
+        vm.stopPrank();
+
+        /////////////////////////////////
+        // FORCE USER INTO LIQUIDATABLE STATE
+        /////////////////////////////////
+        // We artificially increase debt (or assume price drop in real protocol)
+        vm.prank(USER);
+        dscE.mintDSC(collateralValue); // over-mint → unhealthy
+
+        uint256 healthFactorAfter = dscE.getHealthFactor(USER);
+        assertLt(
+            healthFactorAfter,
+            dscE.getMinimumHealthFactor(),
+            "User should now be liquidatable"
+        );
     }
 }

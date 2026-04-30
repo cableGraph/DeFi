@@ -1,0 +1,222 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_7105_IERC721Receiver {
+label = "IERC721Receiver"
+"7105_onERC721Received" [label="onERC721Received"]
+}subgraph cluster_10241_IERC165 {
+label = "IERC165"
+"10241_supportsInterface" [label="supportsInterface"]
+}subgraph cluster_17412_DSCTimelock {
+label = "DSCTimelock"
+"17412_executeBatch" [label="executeBatch"]
+"17412_emergencyExecute" [label="emergencyExecute"]
+"17412_getMinDelay" [label="getMinDelay"]
+"17412__emergencyCall" [label="_emergencyCall"]
+"17412_updateMinDelay" [label="updateMinDelay"]
+"17412_scheduleBatch" [label="scheduleBatch"]
+"17412__getSelector" [label="_getSelector"]
+"17412_removeGuardian" [label="removeGuardian"]
+"17412_execute" [label="execute"]
+"17412_isEmergencyOperation" [label="isEmergencyOperation"]
+"17412_constructor" [label="constructor"]
+"17412_getMaxDelay" [label="getMaxDelay"]
+"17412_schedule" [label="schedule"]
+"17412_getOperation" [label="getOperation"]
+"17412__validateOperation" [label="_validateOperation"]
+"17412_getPendingOperations" [label="getPendingOperations"]
+"17412_addGuardian" [label="addGuardian"]
+"17412_computeOperationId" [label="computeOperationId"]
+"17412_slitherConstructorConstantVariables" [label="slitherConstructorConstantVariables"]
+"17412_isGuardian" [label="isGuardian"]
+"17412_emergencyExecute" -> "17412__emergencyCall"
+"17412__validateOperation" -> "17412__getSelector"
+"17412_addGuardian" -> "17412__grantRole"
+"17412_computeOperationId" -> "17412_hashOperation"
+"17412_constructor" -> "17412_constructor"
+"17412_removeGuardian" -> "17412__revokeRole"
+"17412_updateMinDelay" -> "17412_onlyRole"
+"17412_getOperation" -> "17412_isOperationDone"
+"17412_emergencyExecute" -> "17412_onlyRole"
+"17412_getOperation" -> "17412_getTimestamp"
+"17412_scheduleBatch" -> "17412__validateOperation"
+"17412_schedule" -> "17412_hashOperation"
+"17412_scheduleBatch" -> "17412_hashOperation"
+"17412_execute" -> "17412_onlyRoleOrOpenRole"
+"17412_execute" -> "17412_hashOperation"
+"17412_schedule" -> "17412__validateOperation"
+"17412_emergencyExecute" -> "17412_hashOperation"
+"17412_execute" -> "17412_execute"
+"17412_removeGuardian" -> "17412_onlyRole"
+"17412_scheduleBatch" -> "17412_onlyRole"
+"17412_scheduleBatch" -> "17412_scheduleBatch"
+"17412_schedule" -> "17412_getMinDelay"
+"17412_executeBatch" -> "17412_onlyRoleOrOpenRole"
+"17412_scheduleBatch" -> "17412_getMinDelay"
+"17412_constructor" -> "17412__grantRole"
+"17412_executeBatch" -> "17412_executeBatch"
+"17412_schedule" -> "17412_onlyRole"
+"17412_executeBatch" -> "17412_hashOperation"
+"17412_emergencyExecute" -> "17412__getSelector"
+"17412_addGuardian" -> "17412_onlyRole"
+"17412_schedule" -> "17412_schedule"
+}subgraph cluster_3497_TimelockController {
+label = "TimelockController"
+"3497_execute" [label="execute"]
+"3497_constructor" [label="constructor"]
+"3497_onERC721Received" [label="onERC721Received"]
+"3497__schedule" [label="_schedule"]
+"3497_getTimestamp" [label="getTimestamp"]
+"3497_supportsInterface" [label="supportsInterface"]
+"3497__beforeCall" [label="_beforeCall"]
+"3497__afterCall" [label="_afterCall"]
+"3497_isOperationPending" [label="isOperationPending"]
+"3497_scheduleBatch" [label="scheduleBatch"]
+"3497_updateDelay" [label="updateDelay"]
+"3497_onERC1155BatchReceived" [label="onERC1155BatchReceived"]
+"3497_getMinDelay" [label="getMinDelay"]
+"3497_hashOperation" [label="hashOperation"]
+"3497__execute" [label="_execute"]
+"3497_isOperation" [label="isOperation"]
+"3497_cancel" [label="cancel"]
+"3497_hashOperationBatch" [label="hashOperationBatch"]
+"3497_receive" [label="receive"]
+"3497_isOperationReady" [label="isOperationReady"]
+"3497_schedule" [label="schedule"]
+"3497_executeBatch" [label="executeBatch"]
+"3497_onERC1155Received" [label="onERC1155Received"]
+"3497_isOperationDone" [label="isOperationDone"]
+"3497_execute" -> "3497_hashOperation"
+"3497_executeBatch" -> "3497_onlyRoleOrOpenRole"
+"3497_isOperationPending" -> "3497_getTimestamp"
+"3497_executeBatch" -> "3497__afterCall"
+"3497_execute" -> "3497_onlyRoleOrOpenRole"
+"3497_execute" -> "3497__execute"
+"3497_isOperationDone" -> "3497_getTimestamp"
+"3497__afterCall" -> "3497_isOperationReady"
+"3497_constructor" -> "3497__setRoleAdmin"
+"3497_executeBatch" -> "3497_hashOperationBatch"
+"3497_scheduleBatch" -> "3497_onlyRole"
+"3497_supportsInterface" -> "3497_supportsInterface"
+"3497__beforeCall" -> "3497_isOperationReady"
+"3497_schedule" -> "3497_hashOperation"
+"3497_executeBatch" -> "3497__beforeCall"
+"3497_isOperation" -> "3497_getTimestamp"
+"3497_isOperationReady" -> "3497_getTimestamp"
+"3497__schedule" -> "3497_isOperation"
+"3497_constructor" -> "3497__setupRole"
+"3497_schedule" -> "3497_onlyRole"
+"3497_execute" -> "3497__beforeCall"
+"3497_cancel" -> "3497_onlyRole"
+"3497_executeBatch" -> "3497__execute"
+"3497_cancel" -> "3497_isOperationPending"
+"3497_schedule" -> "3497__schedule"
+"3497_execute" -> "3497__afterCall"
+"3497__beforeCall" -> "3497_isOperationDone"
+"3497_scheduleBatch" -> "3497__schedule"
+"3497__schedule" -> "3497_getMinDelay"
+"3497_scheduleBatch" -> "3497_hashOperationBatch"
+}subgraph cluster_361_AccessControl {
+label = "AccessControl"
+"361_getRoleAdmin" [label="getRoleAdmin"]
+"361_grantRole" [label="grantRole"]
+"361_hasRole" [label="hasRole"]
+"361_renounceRole" [label="renounceRole"]
+"361_revokeRole" [label="revokeRole"]
+"361__setupRole" [label="_setupRole"]
+"361__grantRole" [label="_grantRole"]
+"361__revokeRole" [label="_revokeRole"]
+"361_supportsInterface" [label="supportsInterface"]
+"361__checkRole" [label="_checkRole"]
+"361__setRoleAdmin" [label="_setRoleAdmin"]
+"361_revokeRole" -> "361__revokeRole"
+"361__checkRole" -> "361__checkRole"
+"361__checkRole" -> "361__msgSender"
+"361__checkRole" -> "361_hasRole"
+"361_grantRole" -> "361__grantRole"
+"361__setupRole" -> "361__grantRole"
+"361__setRoleAdmin" -> "361_getRoleAdmin"
+"361_grantRole" -> "361_getRoleAdmin"
+"361__grantRole" -> "361__msgSender"
+"361__grantRole" -> "361_hasRole"
+"361_renounceRole" -> "361__revokeRole"
+"361_renounceRole" -> "361__msgSender"
+"361_revokeRole" -> "361_getRoleAdmin"
+"361_revokeRole" -> "361_onlyRole"
+"361__revokeRole" -> "361_hasRole"
+"361_supportsInterface" -> "361_supportsInterface"
+"361__revokeRole" -> "361__msgSender"
+"361_grantRole" -> "361_onlyRole"
+}subgraph cluster_5035_IERC1155Receiver {
+label = "IERC1155Receiver"
+"5035_onERC1155Received" [label="onERC1155Received"]
+"5035_onERC1155BatchReceived" [label="onERC1155BatchReceived"]
+}subgraph cluster_9006_Context {
+label = "Context"
+"9006__msgData" [label="_msgData"]
+"9006__contextSuffixLength" [label="_contextSuffixLength"]
+"9006__msgSender" [label="_msgSender"]
+}subgraph cluster_434_IAccessControl {
+label = "IAccessControl"
+"434_renounceRole" [label="renounceRole"]
+"434_revokeRole" [label="revokeRole"]
+"434_hasRole" [label="hasRole"]
+"434_getRoleAdmin" [label="getRoleAdmin"]
+"434_grantRole" [label="grantRole"]
+}subgraph cluster_10229_ERC165 {
+label = "ERC165"
+"10229_supportsInterface" [label="supportsInterface"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert DSCTimelock__ZeroAddressNotAllowed()" 
+"revert DSCTimelock__OperationTooLong(uint256,uint256)" 
+"revert(uint256,uint256)" 
+"abi.encodePacked()" 
+"mload(uint256)" 
+"revert DSCTimelock__EmergencyOperationOnly()" 
+"revert(string)" 
+"revert DSCTimelock__OperationTooShort(uint256,uint256)" 
+"calldataload(uint256)" 
+"keccak256(bytes)" 
+"revert DSCTimelock__CriticalOperationNoGracePeriod()" 
+"require(bool,string)" 
+"abi.encode()" 
+"type()" 
+"17412_scheduleBatch" -> "revert DSCTimelock__OperationTooLong(uint256,uint256)"
+"3497__schedule" -> "require(bool,string)"
+"17412_updateMinDelay" -> "revert DSCTimelock__OperationTooShort(uint256,uint256)"
+"3497__beforeCall" -> "require(bool,string)"
+"17412_addGuardian" -> "revert(string)"
+"3497_executeBatch" -> "require(bool,string)"
+"17412_emergencyExecute" -> "revert DSCTimelock__EmergencyOperationOnly()"
+"10229_supportsInterface" -> "type()"
+"17412__validateOperation" -> "revert DSCTimelock__CriticalOperationNoGracePeriod()"
+"3497_hashOperationBatch" -> "keccak256(bytes)"
+"361_renounceRole" -> "require(bool,string)"
+"361__checkRole" -> "abi.encodePacked()"
+"3497__afterCall" -> "require(bool,string)"
+"3497_cancel" -> "require(bool,string)"
+"3497_hashOperationBatch" -> "abi.encode()"
+"17412_scheduleBatch" -> "revert DSCTimelock__OperationTooShort(uint256,uint256)"
+"3497_hashOperation" -> "keccak256(bytes)"
+"361_supportsInterface" -> "type()"
+"17412_schedule" -> "revert DSCTimelock__OperationTooLong(uint256,uint256)"
+"17412_updateMinDelay" -> "revert DSCTimelock__OperationTooLong(uint256,uint256)"
+"3497_scheduleBatch" -> "require(bool,string)"
+"361__checkRole" -> "revert(string)"
+"17412_schedule" -> "revert DSCTimelock__OperationTooShort(uint256,uint256)"
+"17412_slitherConstructorConstantVariables" -> "keccak256(bytes)"
+"17412__emergencyCall" -> "mload(uint256)"
+"17412_addGuardian" -> "revert DSCTimelock__ZeroAddressNotAllowed()"
+"17412__validateOperation" -> "keccak256(bytes)"
+"17412_removeGuardian" -> "revert(string)"
+"3497_supportsInterface" -> "type()"
+"3497__execute" -> "require(bool,string)"
+"17412__emergencyCall" -> "revert(uint256,uint256)"
+"3497_hashOperation" -> "abi.encode()"
+"17412__emergencyCall" -> "revert(string)"
+"17412__getSelector" -> "calldataload(uint256)"
+"3497_updateDelay" -> "require(bool,string)"
+"17412_constructor" -> "revert DSCTimelock__ZeroAddressNotAllowed()"
+}
+}

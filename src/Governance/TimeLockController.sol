@@ -4,7 +4,6 @@ pragma solidity ^0.8.18;
 import {
     TimelockController
 } from "@openzeppelin/governance/TimelockController.sol";
-import {AccessControl} from "@openzeppelin/access/AccessControl.sol";
 
 /**
  * @title DSCTimelock
@@ -30,7 +29,6 @@ contract DSCTimelock is TimelockController {
     error DSCTimelock__CriticalOperationNoGracePeriod();
     error DSCTimelock__EmergencyOperationOnly();
     error DSCTimelock__ZeroAddressNotAllowed();
-
     ///////////////////
     //// EVENTS //////
     ////////////////

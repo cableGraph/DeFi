@@ -1,0 +1,13 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_18063_OracleLib {
+label = "OracleLib"
+"18063_StaleCheckLatestRoundData" [label="StaleCheckLatestRoundData"]
+"18063_slitherConstructorConstantVariables" [label="slitherConstructorConstantVariables"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert OracleLib__StalePrice()" 
+"18063_StaleCheckLatestRoundData" -> "revert OracleLib__StalePrice()"
+}
+}

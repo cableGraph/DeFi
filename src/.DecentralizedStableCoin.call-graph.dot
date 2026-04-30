@@ -1,0 +1,119 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_547_Ownable {
+label = "Ownable"
+"547_transferOwnership" [label="transferOwnership"]
+"547__transferOwnership" [label="_transferOwnership"]
+"547__checkOwner" [label="_checkOwner"]
+"547_renounceOwnership" [label="renounceOwnership"]
+"547_owner" [label="owner"]
+"547_constructor" [label="constructor"]
+"547_renounceOwnership" -> "547__transferOwnership"
+"547__checkOwner" -> "547_owner"
+"547_constructor" -> "547__msgSender"
+"547_renounceOwnership" -> "547_onlyOwner"
+"547__checkOwner" -> "547__msgSender"
+"547_transferOwnership" -> "547__transferOwnership"
+"547_transferOwnership" -> "547_onlyOwner"
+"547_constructor" -> "547__transferOwnership"
+}subgraph cluster_5700_IERC20 {
+label = "IERC20"
+"5700_transferFrom" [label="transferFrom"]
+"5700_transfer" [label="transfer"]
+"5700_allowance" [label="allowance"]
+"5700_balanceOf" [label="balanceOf"]
+"5700_approve" [label="approve"]
+"5700_totalSupply" [label="totalSupply"]
+}subgraph cluster_14824_DecentralizedStableCoin {
+label = "DecentralizedStableCoin"
+"14824_constructor" [label="constructor"]
+"14824_mint" [label="mint"]
+"14824_burn" [label="burn"]
+"14824_burn" -> "14824_balanceOf"
+"14824_constructor" -> "14824_constructor"
+"14824_burn" -> "14824_onlyOwner"
+"14824_mint" -> "14824_onlyOwner"
+"14824_mint" -> "14824__mint"
+"14824_burn" -> "14824_burn"
+}subgraph cluster_9006_Context {
+label = "Context"
+"9006__msgData" [label="_msgData"]
+"9006__contextSuffixLength" [label="_contextSuffixLength"]
+"9006__msgSender" [label="_msgSender"]
+}subgraph cluster_5744_ERC20Burnable {
+label = "ERC20Burnable"
+"5744_burn" [label="burn"]
+"5744_burnFrom" [label="burnFrom"]
+"5744_burnFrom" -> "5744__burn"
+"5744_burn" -> "5744__msgSender"
+"5744_burnFrom" -> "5744__msgSender"
+"5744_burn" -> "5744__burn"
+"5744_burnFrom" -> "5744__spendAllowance"
+}subgraph cluster_6675_IERC20Metadata {
+label = "IERC20Metadata"
+"6675_symbol" [label="symbol"]
+"6675_name" [label="name"]
+"6675_decimals" [label="decimals"]
+}subgraph cluster_5622_ERC20 {
+label = "ERC20"
+"5622__approve" [label="_approve"]
+"5622__mint" [label="_mint"]
+"5622__spendAllowance" [label="_spendAllowance"]
+"5622_balanceOf" [label="balanceOf"]
+"5622_increaseAllowance" [label="increaseAllowance"]
+"5622_transferFrom" [label="transferFrom"]
+"5622_decreaseAllowance" [label="decreaseAllowance"]
+"5622__afterTokenTransfer" [label="_afterTokenTransfer"]
+"5622_totalSupply" [label="totalSupply"]
+"5622_transfer" [label="transfer"]
+"5622_symbol" [label="symbol"]
+"5622_allowance" [label="allowance"]
+"5622_approve" [label="approve"]
+"5622__burn" [label="_burn"]
+"5622_constructor" [label="constructor"]
+"5622_name" [label="name"]
+"5622__beforeTokenTransfer" [label="_beforeTokenTransfer"]
+"5622_decimals" [label="decimals"]
+"5622__transfer" [label="_transfer"]
+"5622_transfer" -> "5622__msgSender"
+"5622_decreaseAllowance" -> "5622__msgSender"
+"5622_increaseAllowance" -> "5622_allowance"
+"5622__mint" -> "5622__beforeTokenTransfer"
+"5622_transferFrom" -> "5622__spendAllowance"
+"5622__transfer" -> "5622__afterTokenTransfer"
+"5622_transferFrom" -> "5622__msgSender"
+"5622_approve" -> "5622__msgSender"
+"5622__burn" -> "5622__beforeTokenTransfer"
+"5622__mint" -> "5622__afterTokenTransfer"
+"5622__spendAllowance" -> "5622_allowance"
+"5622__burn" -> "5622__afterTokenTransfer"
+"5622_transfer" -> "5622__transfer"
+"5622_transferFrom" -> "5622__transfer"
+"5622_decreaseAllowance" -> "5622_allowance"
+"5622_increaseAllowance" -> "5622__approve"
+"5622__spendAllowance" -> "5622__approve"
+"5622_increaseAllowance" -> "5622__msgSender"
+"5622_decreaseAllowance" -> "5622__approve"
+"5622__transfer" -> "5622__beforeTokenTransfer"
+"5622_approve" -> "5622__approve"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"require(bool,string)" 
+"revert DecentralizedStableCoin_BurnAmountExceedsBalance()" 
+"revert DecentralizedStableCoin_NotZeroAddress()" 
+"revert DecentralizedStableCoin_AmountMustBeAboveZero()" 
+"14824_mint" -> "revert DecentralizedStableCoin_AmountMustBeAboveZero()"
+"14824_burn" -> "revert DecentralizedStableCoin_AmountMustBeAboveZero()"
+"5622__spendAllowance" -> "require(bool,string)"
+"547_transferOwnership" -> "require(bool,string)"
+"5622__transfer" -> "require(bool,string)"
+"5622__approve" -> "require(bool,string)"
+"5622_decreaseAllowance" -> "require(bool,string)"
+"5622__burn" -> "require(bool,string)"
+"14824_burn" -> "revert DecentralizedStableCoin_BurnAmountExceedsBalance()"
+"14824_mint" -> "revert DecentralizedStableCoin_NotZeroAddress()"
+"547__checkOwner" -> "require(bool,string)"
+"5622__mint" -> "require(bool,string)"
+}
+}

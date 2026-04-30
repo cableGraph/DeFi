@@ -10,7 +10,6 @@ import {
     ERC20Burnable
 } from "@openzeppelin/token/ERC20/extensions/ERC20Burnable.sol";
 import {Ownable2Step} from "@openzeppelin/access/Ownable2Step.sol";
-import {SafeCast} from "@openzeppelin/utils/math/SafeCast.sol";
 
 /**
  * @title DSCGovernanceToken
@@ -90,16 +89,16 @@ contract DSCGovernanceToken is
     //////////////////////
     //// CONSTANTS //////
     ////////////////////
-    uint256 public constant MAX_SUPPLY = 1_000_000_000 ether; 
-    uint256 public constant INITIAL_SUPPLY = 100_000_000 ether; 
-    uint256 public constant COMMUNITY_TREASURY_SUPPLY = 300_000_000 ether; 
-    uint256 public constant TEAM_SUPPLY = 150_000_000 ether; 
-    uint256 public constant INVESTOR_SUPPLY = 100_000_000 ether; 
-    uint256 public constant ECOSYSTEM_SUPPLY = 350_000_000 ether; 
+    uint256 public constant MAX_SUPPLY = 1_000_000_000 ether;
+    uint256 public constant INITIAL_SUPPLY = 100_000_000 ether;
+    uint256 public constant COMMUNITY_TREASURY_SUPPLY = 300_000_000 ether;
+    uint256 public constant TEAM_SUPPLY = 150_000_000 ether;
+    uint256 public constant INVESTOR_SUPPLY = 100_000_000 ether;
+    uint256 public constant ECOSYSTEM_SUPPLY = 350_000_000 ether;
 
-    uint256 public constant MIN_LOCK_TIME = 7 days; 
-    uint256 public constant VESTING_PERIOD = 4 * 365 days; 
-    uint256 public constant DELEGATION_COOLDOWN = 7 days; 
+    uint256 public constant MIN_LOCK_TIME = 7 days;
+    uint256 public constant VESTING_PERIOD = 4 * 365 days;
+    uint256 public constant DELEGATION_COOLDOWN = 7 days;
 
     //////////////////////
     //// STATE VARS /////

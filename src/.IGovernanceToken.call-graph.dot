@@ -1,0 +1,14 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_17469_IGovernanceToken {
+label = "IGovernanceToken"
+"17469_mintForDSC" [label="mintForDSC"]
+"17469_getDscEngine" [label="getDscEngine"]
+"17469_getVotes" [label="getVotes"]
+"17469_burnFrom" [label="burnFrom"]
+"17469_delegate" [label="delegate"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+}
+}
