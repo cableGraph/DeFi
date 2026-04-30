@@ -1,0 +1,15 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_9080_Counters {
+label = "Counters"
+"9080_increment" [label="increment"]
+"9080_reset" [label="reset"]
+"9080_decrement" [label="decrement"]
+"9080_current" [label="current"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"require(bool,string)" 
+"9080_decrement" -> "require(bool,string)"
+}
+}

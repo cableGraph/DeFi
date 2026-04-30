@@ -1,0 +1,43 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_7435_Address {
+label = "Address"
+"7435_sendValue" [label="sendValue"]
+"7435_verifyCallResultFromTarget" [label="verifyCallResultFromTarget"]
+"7435__revert" [label="_revert"]
+"7435_functionCallWithValue" [label="functionCallWithValue"]
+"7435_verifyCallResult" [label="verifyCallResult"]
+"7435_functionStaticCall" [label="functionStaticCall"]
+"7435_functionDelegateCall" [label="functionDelegateCall"]
+"7435_functionCall" [label="functionCall"]
+"7435_isContract" [label="isContract"]
+"7435_functionDelegateCall" -> "7435_functionDelegateCall"
+"7435_functionCallWithValue" -> "7435_verifyCallResultFromTarget"
+"7435_functionCallWithValue" -> "7435_functionCallWithValue"
+"7435_functionStaticCall" -> "7435_functionStaticCall"
+"7435_functionStaticCall" -> "7435_verifyCallResultFromTarget"
+"7435_verifyCallResult" -> "7435__revert"
+"7435_functionDelegateCall" -> "7435_verifyCallResultFromTarget"
+"7435_verifyCallResultFromTarget" -> "7435_isContract"
+"7435_functionCall" -> "7435_functionCallWithValue"
+"7435_verifyCallResultFromTarget" -> "7435__revert"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"code(address)" 
+"balance(address)" 
+"revert(uint256,uint256)" 
+"mload(uint256)" 
+"revert(string)" 
+"require(bool,string)" 
+"7435_functionCallWithValue" -> "balance(address)"
+"7435_sendValue" -> "require(bool,string)"
+"7435__revert" -> "mload(uint256)"
+"7435_functionCallWithValue" -> "require(bool,string)"
+"7435__revert" -> "revert(uint256,uint256)"
+"7435_sendValue" -> "balance(address)"
+"7435__revert" -> "revert(string)"
+"7435_verifyCallResultFromTarget" -> "require(bool,string)"
+"7435_isContract" -> "code(address)"
+}
+}

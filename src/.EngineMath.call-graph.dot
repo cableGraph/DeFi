@@ -1,0 +1,41 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_17999_EngineMath {
+label = "EngineMath"
+"17999_safeMul" [label="safeMul"]
+"17999_calculateTokenAmount" [label="calculateTokenAmount"]
+"17999_min" [label="min"]
+"17999_divWad" [label="divWad"]
+"17999_slitherConstructorConstantVariables" [label="slitherConstructorConstantVariables"]
+"17999_wouldUnderflow" [label="wouldUnderflow"]
+"17999_max" [label="max"]
+"17999_calculateUsdValue" [label="calculateUsdValue"]
+"17999_safeDiv" [label="safeDiv"]
+"17999_mulWad" [label="mulWad"]
+"17999_safeSub" [label="safeSub"]
+"17999_safeAdd" [label="safeAdd"]
+"17999_calculateHealthFactor" [label="calculateHealthFactor"]
+"17999_mulWadUp" [label="mulWadUp"]
+"17999_calculateUsdValue" -> "17999_mulWad"
+"17999_calculateTokenAmount" -> "17999_divWad"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert MathMasters__AddFailed()" 
+"require(bool,string)" 
+"revert(uint256,uint256)" 
+"mstore(uint256,uint256)" 
+"17999_safeMul" -> "revert(uint256,uint256)"
+"17999_safeSub" -> "require(bool,string)"
+"17999_safeAdd" -> "revert MathMasters__AddFailed()"
+"17999_safeDiv" -> "revert(uint256,uint256)"
+"17999_divWad" -> "revert(uint256,uint256)"
+"17999_safeMul" -> "mstore(uint256,uint256)"
+"17999_mulWad" -> "mstore(uint256,uint256)"
+"17999_mulWadUp" -> "mstore(uint256,uint256)"
+"17999_mulWad" -> "revert(uint256,uint256)"
+"17999_safeDiv" -> "mstore(uint256,uint256)"
+"17999_divWad" -> "mstore(uint256,uint256)"
+"17999_mulWadUp" -> "revert(uint256,uint256)"
+}
+}

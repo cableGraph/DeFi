@@ -1,0 +1,48 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_8976_Checkpoints {
+label = "Checkpoints"
+"8976_getAtProbablyRecentBlock" [label="getAtProbablyRecentBlock"]
+"8976__lowerBinaryLookup" [label="_lowerBinaryLookup"]
+"8976_push" [label="push"]
+"8976__upperBinaryLookup" [label="_upperBinaryLookup"]
+"8976_upperLookup" [label="upperLookup"]
+"8976_getAtBlock" [label="getAtBlock"]
+"8976_upperLookupRecent" [label="upperLookupRecent"]
+"8976_latest" [label="latest"]
+"8976_lowerLookup" [label="lowerLookup"]
+"8976__unsafeAccess" [label="_unsafeAccess"]
+"8976_latestCheckpoint" [label="latestCheckpoint"]
+"8976_length" [label="length"]
+"8976__insert" [label="_insert"]
+"8976_push" -> "8976__insert"
+"8976_latest" -> "8976__unsafeAccess"
+"8976_push" -> "8976_push"
+"8976_getAtBlock" -> "8976__unsafeAccess"
+"8976_push" -> "8976_latest"
+"8976_getAtProbablyRecentBlock" -> "8976__unsafeAccess"
+"8976_upperLookup" -> "8976__upperBinaryLookup"
+"8976_getAtBlock" -> "8976__upperBinaryLookup"
+"8976_getAtProbablyRecentBlock" -> "8976__upperBinaryLookup"
+"8976_latestCheckpoint" -> "8976__unsafeAccess"
+"8976_upperLookup" -> "8976__unsafeAccess"
+"8976_upperLookupRecent" -> "8976__unsafeAccess"
+"8976_upperLookupRecent" -> "8976__upperBinaryLookup"
+"8976__insert" -> "8976__unsafeAccess"
+"8976__lowerBinaryLookup" -> "8976__unsafeAccess"
+"8976_lowerLookup" -> "8976__lowerBinaryLookup"
+"8976__upperBinaryLookup" -> "8976__unsafeAccess"
+"8976_lowerLookup" -> "8976__unsafeAccess"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"keccak256(uint256,uint256)" 
+"require(bool,string)" 
+"mstore(uint256,uint256)" 
+"8976_getAtBlock" -> "require(bool,string)"
+"8976__insert" -> "require(bool,string)"
+"8976__unsafeAccess" -> "mstore(uint256,uint256)"
+"8976__unsafeAccess" -> "keccak256(uint256,uint256)"
+"8976_getAtProbablyRecentBlock" -> "require(bool,string)"
+}
+}

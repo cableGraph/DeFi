@@ -1,0 +1,39 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_10001_ECDSA {
+label = "ECDSA"
+"10001_toDataWithIntendedValidatorHash" [label="toDataWithIntendedValidatorHash"]
+"10001_tryRecover" [label="tryRecover"]
+"10001_recover" [label="recover"]
+"10001_toEthSignedMessageHash" [label="toEthSignedMessageHash"]
+"10001__throwError" [label="_throwError"]
+"10001_toTypedDataHash" [label="toTypedDataHash"]
+"10001_recover" -> "10001__throwError"
+"10001_tryRecover" -> "10001_tryRecover"
+"10001_recover" -> "10001_tryRecover"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"ecrecover(bytes32,uint8,bytes32,bytes32)" 
+"abi.encodePacked()" 
+"keccak256(bytes)" 
+"mload(uint256)" 
+"byte(uint256,uint256)" 
+"revert(string)" 
+"keccak256(uint256,uint256)" 
+"mstore(uint256,uint256)" 
+"10001__throwError" -> "revert(string)"
+"10001_tryRecover" -> "byte(uint256,uint256)"
+"10001_tryRecover" -> "mload(uint256)"
+"10001_toTypedDataHash" -> "mstore(uint256,uint256)"
+"10001_toDataWithIntendedValidatorHash" -> "keccak256(bytes)"
+"10001_toTypedDataHash" -> "mload(uint256)"
+"10001_toTypedDataHash" -> "keccak256(uint256,uint256)"
+"10001_toEthSignedMessageHash" -> "abi.encodePacked()"
+"10001_tryRecover" -> "ecrecover(bytes32,uint8,bytes32,bytes32)"
+"10001_toEthSignedMessageHash" -> "keccak256(bytes)"
+"10001_toEthSignedMessageHash" -> "mstore(uint256,uint256)"
+"10001_toEthSignedMessageHash" -> "keccak256(uint256,uint256)"
+"10001_toDataWithIntendedValidatorHash" -> "abi.encodePacked()"
+}
+}

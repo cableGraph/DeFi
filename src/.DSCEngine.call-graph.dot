@@ -1,0 +1,123 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_4994_ReentrancyGuard {
+label = "ReentrancyGuard"
+"4994__nonReentrantBefore" [label="_nonReentrantBefore"]
+"4994_constructor" [label="constructor"]
+"4994__nonReentrantAfter" [label="_nonReentrantAfter"]
+"4994__reentrancyGuardEntered" [label="_reentrancyGuardEntered"]
+}subgraph cluster_14717_DSCEngine {
+label = "DSCEngine"
+"14717_redeemCollateral" [label="redeemCollateral"]
+"14717__redeemCollateral" [label="_redeemCollateral"]
+"14717_getTokenAmountFromUsd" [label="getTokenAmountFromUsd"]
+"14717__getAccountInformation" [label="_getAccountInformation"]
+"14717__calculateHealthFactor" [label="_calculateHealthFactor"]
+"14717_calculateHealthFactor" [label="calculateHealthFactor"]
+"14717_getUsdValue" [label="getUsdValue"]
+"14717_slitherConstructorConstantVariables" [label="slitherConstructorConstantVariables"]
+"14717_emergencyWithdraw" [label="emergencyWithdraw"]
+"14717_getAdditionalFeedPrecision" [label="getAdditionalFeedPrecision"]
+"14717_depositCollateralAndMintDSC" [label="depositCollateralAndMintDSC"]
+"14717_burnDSC" [label="burnDSC"]
+"14717_getCollateralBalanceOfUser" [label="getCollateralBalanceOfUser"]
+"14717_liquidate" [label="liquidate"]
+"14717___moreThanZero" [label="__moreThanZero"]
+"14717_getHealthFactor" [label="getHealthFactor"]
+"14717_getMultipleAccountInformation" [label="getMultipleAccountInformation"]
+"14717__getAdjustedPrice" [label="_getAdjustedPrice"]
+"14717_pause" [label="pause"]
+"14717_constructor" [label="constructor"]
+"14717_getCollateralTokens" [label="getCollateralTokens"]
+"14717_unpause" [label="unpause"]
+"14717_getCollateralDeposited" [label="getCollateralDeposited"]
+"14717_getAccountCollateralValue" [label="getAccountCollateralValue"]
+"14717__healthFactor" [label="_healthFactor"]
+"14717_getMultipleTokenPrices" [label="getMultipleTokenPrices"]
+"14717_redeemCollateralForDSC" [label="redeemCollateralForDSC"]
+"14717_mintDSC" [label="mintDSC"]
+"14717_getAccountInformation" [label="getAccountInformation"]
+"14717_depositCollateral" [label="depositCollateral"]
+"14717___isAllowedToken" [label="__isAllowedToken"]
+"14717__revertIfHealthFactorIsBroken" [label="_revertIfHealthFactorIsBroken"]
+"14717_getCollateralTokenPriceFeed" [label="getCollateralTokenPriceFeed"]
+"14717__calculateHealthFactorForAccount" [label="_calculateHealthFactorForAccount"]
+"14717__burnDSC" [label="_burnDSC"]
+"14717_getHealthFactor" -> "14717__healthFactor"
+"14717_liquidate" -> "14717_moreThanZero"
+"14717_depositCollateralAndMintDSC" -> "14717_mintDSC"
+"14717_redeemCollateral" -> "14717_nonReentrant"
+"14717_redeemCollateral" -> "14717_moreThanZero"
+"14717_mintDSC" -> "14717__calculateHealthFactorForAccount"
+"14717_getTokenAmountFromUsd" -> "14717__getAdjustedPrice"
+"14717_getAccountInformation" -> "14717__getAccountInformation"
+"14717_redeemCollateral" -> "14717__redeemCollateral"
+"14717_mintDSC" -> "14717_moreThanZero"
+"14717_getMultipleAccountInformation" -> "14717_getAccountCollateralValue"
+"14717_redeemCollateralForDSC" -> "14717_redeemCollateral"
+"14717_depositCollateralAndMintDSC" -> "14717_notPaused"
+"14717_burnDSC" -> "14717__burnDSC"
+"14717_mintDSC" -> "14717_notPaused"
+"14717_liquidate" -> "14717_notPaused"
+"14717_liquidate" -> "14717__revertIfHealthFactorIsBroken"
+"14717_depositCollateralAndMintDSC" -> "14717_depositCollateral"
+"14717_depositCollateral" -> "14717_nonReentrant"
+"14717_redeemCollateralForDSC" -> "14717_nonReentrant"
+"14717_liquidate" -> "14717__getAdjustedPrice"
+"14717_redeemCollateralForDSC" -> "14717_burnDSC"
+"14717__healthFactor" -> "14717__calculateHealthFactor"
+"14717_getUsdValue" -> "14717__getAdjustedPrice"
+"14717_liquidate" -> "14717_nonReentrant"
+"14717_liquidate" -> "14717__healthFactor"
+"14717_depositCollateralAndMintDSC" -> "14717_moreThanZero"
+"14717__getAccountInformation" -> "14717_getAccountCollateralValue"
+"14717_depositCollateral" -> "14717_isAllowedToken"
+"14717_burnDSC" -> "14717_nonReentrant"
+"14717_depositCollateralAndMintDSC" -> "14717_nonReentrant"
+"14717_burnDSC" -> "14717__revertIfHealthFactorIsBroken"
+"14717__healthFactor" -> "14717__getAccountInformation"
+"14717_depositCollateral" -> "14717_moreThanZero"
+"14717_mintDSC" -> "14717_nonReentrant"
+"14717_getAccountCollateralValue" -> "14717__getAdjustedPrice"
+"14717_burnDSC" -> "14717_moreThanZero"
+"14717__revertIfHealthFactorIsBroken" -> "14717__healthFactor"
+"14717_redeemCollateral" -> "14717__revertIfHealthFactorIsBroken"
+"14717_calculateHealthFactor" -> "14717__calculateHealthFactor"
+"14717_getMultipleTokenPrices" -> "14717__getAdjustedPrice"
+"14717_depositCollateral" -> "14717_notPaused"
+"14717__calculateHealthFactorForAccount" -> "14717_getAccountCollateralValue"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert DSCEngine__HealthFactorNotImproved()" 
+"revert DSCEngine__BreaksHealthFactor(uint256)" 
+"revert DSCEngine__HealthFactorOk()" 
+"revert DSCEngine__TokenAddressesAndPriceFeedAddressesLengthMismatch()" 
+"revert DSCEngine__TokenNotAllowed()" 
+"revert DSCEngine__MintFailed()" 
+"require(bool,string)" 
+"revert DSCEngine__InvalidAmount()" 
+"revert DSCEngine__AmountMustBeAboveZero()" 
+"4994__nonReentrantBefore" -> "require(bool,string)"
+"14717_getHealthFactor" -> "require(bool,string)"
+"14717_redeemCollateral" -> "require(bool,string)"
+"14717__burnDSC" -> "revert DSCEngine__InvalidAmount()"
+"14717_liquidate" -> "revert DSCEngine__HealthFactorOk()"
+"14717_constructor" -> "revert DSCEngine__TokenAddressesAndPriceFeedAddressesLengthMismatch()"
+"14717___isAllowedToken" -> "revert DSCEngine__TokenNotAllowed()"
+"14717_mintDSC" -> "revert DSCEngine__MintFailed()"
+"14717_liquidate" -> "require(bool,string)"
+"14717___moreThanZero" -> "revert DSCEngine__AmountMustBeAboveZero()"
+"14717_pause" -> "require(bool,string)"
+"14717__burnDSC" -> "require(bool,string)"
+"14717_depositCollateral" -> "require(bool,string)"
+"14717_burnDSC" -> "require(bool,string)"
+"14717_redeemCollateralForDSC" -> "require(bool,string)"
+"14717_unpause" -> "require(bool,string)"
+"14717_liquidate" -> "revert DSCEngine__HealthFactorNotImproved()"
+"14717__revertIfHealthFactorIsBroken" -> "revert DSCEngine__BreaksHealthFactor(uint256)"
+"14717_constructor" -> "require(bool,string)"
+"14717_mintDSC" -> "revert DSCEngine__BreaksHealthFactor(uint256)"
+"14717_emergencyWithdraw" -> "require(bool,string)"
+}
+}

@@ -1,0 +1,40 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_7087_SafeERC20 {
+label = "SafeERC20"
+"7087__callOptionalReturn" [label="_callOptionalReturn"]
+"7087_forceApprove" [label="forceApprove"]
+"7087_safeApprove" [label="safeApprove"]
+"7087_safePermit" [label="safePermit"]
+"7087_safeIncreaseAllowance" [label="safeIncreaseAllowance"]
+"7087_safeDecreaseAllowance" [label="safeDecreaseAllowance"]
+"7087_safeTransferFrom" [label="safeTransferFrom"]
+"7087_safeTransfer" [label="safeTransfer"]
+"7087__callOptionalReturnBool" [label="_callOptionalReturnBool"]
+"7087_safeDecreaseAllowance" -> "7087__callOptionalReturn"
+"7087_safeTransferFrom" -> "7087__callOptionalReturn"
+"7087_forceApprove" -> "7087__callOptionalReturnBool"
+"7087_safeTransfer" -> "7087__callOptionalReturn"
+"7087_safeApprove" -> "7087__callOptionalReturn"
+"7087_safeIncreaseAllowance" -> "7087__callOptionalReturn"
+"7087_forceApprove" -> "7087__callOptionalReturn"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"require(bool,string)" 
+"abi.decode()" 
+"abi.encodeWithSelector()" 
+"7087_safeApprove" -> "require(bool,string)"
+"7087_safeDecreaseAllowance" -> "abi.encodeWithSelector()"
+"7087_safeIncreaseAllowance" -> "abi.encodeWithSelector()"
+"7087_forceApprove" -> "abi.encodeWithSelector()"
+"7087_safeTransfer" -> "abi.encodeWithSelector()"
+"7087_safeTransferFrom" -> "abi.encodeWithSelector()"
+"7087__callOptionalReturn" -> "abi.decode()"
+"7087__callOptionalReturnBool" -> "abi.decode()"
+"7087_safeDecreaseAllowance" -> "require(bool,string)"
+"7087__callOptionalReturn" -> "require(bool,string)"
+"7087_safeApprove" -> "abi.encodeWithSelector()"
+"7087_safePermit" -> "require(bool,string)"
+}
+}

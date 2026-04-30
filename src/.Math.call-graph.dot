@@ -1,0 +1,29 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_11107_Math {
+label = "Math"
+"11107_average" [label="average"]
+"11107_max" [label="max"]
+"11107_log2" [label="log2"]
+"11107_mulDiv" [label="mulDiv"]
+"11107_log10" [label="log10"]
+"11107_log256" [label="log256"]
+"11107_min" [label="min"]
+"11107_ceilDiv" [label="ceilDiv"]
+"11107_sqrt" [label="sqrt"]
+"11107_log10" -> "11107_log10"
+"11107_mulDiv" -> "11107_mulDiv"
+"11107_log2" -> "11107_log2"
+"11107_log256" -> "11107_log256"
+"11107_sqrt" -> "11107_min"
+"11107_sqrt" -> "11107_log2"
+"11107_sqrt" -> "11107_sqrt"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"require(bool,string)" 
+"mulmod(uint256,uint256,uint256)" 
+"11107_mulDiv" -> "mulmod(uint256,uint256,uint256)"
+"11107_mulDiv" -> "require(bool,string)"
+}
+}

@@ -1,0 +1,35 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_17674_AccountDataPacker {
+label = "AccountDataPacker"
+"17674_incrementDepositCount" [label="incrementDepositCount"]
+"17674_updateLastActivity" [label="updateLastActivity"]
+"17674_safeMul" [label="safeMul"]
+"17674_updateActivityAndIncrementDeposit" [label="updateActivityAndIncrementDeposit"]
+"17674_slitherConstructorConstantVariables" [label="slitherConstructorConstantVariables"]
+"17674_unpack" [label="unpack"]
+"17674_getLastActivity" [label="getLastActivity"]
+"17674_pack" [label="pack"]
+"17674_getFlags" [label="getFlags"]
+"17674_updateActivity" [label="updateActivity"]
+"17674_getDepositCount" [label="getDepositCount"]
+"17674_incrementDepositCount" -> "17674_unpack"
+"17674_updateActivityAndIncrementDeposit" -> "17674_pack"
+"17674_incrementDepositCount" -> "17674_pack"
+"17674_updateActivity" -> "17674_pack"
+"17674_updateLastActivity" -> "17674_pack"
+"17674_updateLastActivity" -> "17674_unpack"
+"17674_updateActivityAndIncrementDeposit" -> "17674_unpack"
+"17674_updateActivity" -> "17674_unpack"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert(uint256,uint256)" 
+"mstore(uint256,uint256)" 
+"revert(string)" 
+"17674_safeMul" -> "mstore(uint256,uint256)"
+"17674_updateActivityAndIncrementDeposit" -> "revert(string)"
+"17674_safeMul" -> "revert(uint256,uint256)"
+"17674_incrementDepositCount" -> "revert(string)"
+}
+}
